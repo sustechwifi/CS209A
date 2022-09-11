@@ -10,7 +10,6 @@ import com.example.testdemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -30,12 +29,16 @@ public class UserController {
     @Resource
     StringRedisTemplate stringRedisTemplate;
 
-
+    /**
+     * 获取当前用户
+     * @param token
+     * @return
+     */
     @GetMapping("/me")
     public Result<?> me(@RequestParam("token") Object token){
         String user = stringRedisTemplate.opsForValue().get(token);
         if (StrUtil.isBlank(user)){
-            return Result.error("-1","token 已过期或无效");
+            return Result.error("-1", "token 已过期或无效");
         }
         return Result.success(user);
     }
@@ -59,7 +62,7 @@ public class UserController {
     public Result<?> save(@RequestBody User user){
         int result = userService.addUser(user);
         System.out.println("add result: "+result);
-        return result == 0 ?Result.success():Result.error("101","添加失败");
+        return result == 0 ? Result.success() : Result.error("101","添加失败");
     }
 
     @PostMapping("/check")
@@ -92,9 +95,6 @@ public class UserController {
                               @RequestParam(defaultValue = "") String search,
                               @RequestParam(defaultValue = "all")String type){
         System.out.println("search:"+search);
-        System.out.println("pageNum:"+pageNum);
-        System.out.println("pageSize:"+pageSize);
-        System.out.println("type:"+type);
         User user = new User();
         if ("username".equals(type)) {
             user.setUsername(search);
@@ -129,7 +129,6 @@ public class UserController {
 
     @PostMapping("/deleteByids")
     public Result<?> deleteUserByIds(@RequestBody long[] ids) {
-        System.out.println(Arrays.toString(ids));
         userService.deleteUserByIds(ids);
         return Result.success();
     }

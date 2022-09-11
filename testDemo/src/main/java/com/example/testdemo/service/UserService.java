@@ -84,8 +84,9 @@ public class UserService {
     public Result<?> login(User user){
         User userLogin = userMapper.userLogin(user);
         if (userLogin == null){
-            return Result.error("109","用户名或密码错误");
-        }else {
+            return Result.error("109", "用户名或密码错误");
+        }
+        else {
             //生成随机token
             String token = UUID.randomUUID().toString(true);
             UserDTO userDTO = BeanUtil.copyProperties(userLogin,UserDTO.class);
