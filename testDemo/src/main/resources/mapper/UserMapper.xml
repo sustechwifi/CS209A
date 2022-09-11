@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.example.testdemo.mapper.UserMapper">
+
+    <resultMap id="userRM" type="com.example.testdemo.entity.User">
+        <!--
+        id 只对主键进行映射
+        result 对一般字段的映射
+        -->
+        <result column="nick_name" property="nickName"/>
+    </resultMap>
+
+    <delete id="deleteByIds">
+        delete  from  "user" where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <!--实现查询功能的select子标签-->
+
+
+    <select id="selectByPagination" resultMap="userRM">
+        select * from "user" <where>
+        <if test="user.username != null and user.username != '' ">
+            and username like #{user.username}
+        </if>
+        <if test="user.nickName != null and user.nickName != '' ">
+            or nick_name like #{user.nickName}
+        </if>
+    </where>
+        limit #{begin},#{end}
+    </select>
+
+    <select id="selectTotalCount" resultType="java.lang.Integer">
+        select count(*) from "user" <where>
+        <if test="user.username != null and user.username != '' ">
+            and username like #{user.username}
+        </if>
+        <if test="user.nickName != null and user.nickName != '' ">
+            or nick_name like #{user.nickName}
+        </if>
+    </where>
+    </select>
+
+    <select id="userLogin" resultMap="userRM">
+        select * from "user" where username = #{username} and password = #{password} limit 1
+    </select>
+
+    <select id="checkUser" resultMap="userRM">
+        select * from  "user" where username = #{username} limit 1
+    </select>
+
+    <select id="getUserById" resultMap="userRM">
+        select * from "user" where id = #{id}
+    </select>
+
+
+
+</mapper>
