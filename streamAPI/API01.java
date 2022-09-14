@@ -13,7 +13,8 @@ import java.util.stream.StreamSupport;
 
 /**
  * stream api
- * count filter
+ * 流 是一种连续的数据集，在终结操作之前可以修改其中元素，（如过滤，跳过元素）
+ * 一旦使用了终结操作（如 计数，查找，遍历等）之后，便不能再操作流
  */
 @SuppressWarnings("all")
 public class API01 {
@@ -23,6 +24,7 @@ public class API01 {
     /** 01 以集合或数组的流代替传统迭代
      * Stream<T> filter(Predicate<? super T> predicate);
      * 传入返回值为boolean类型的函数或lambda表达式
+     *
      */
     static void test01(){
         long cnt = test.stream().filter(s -> s.length() >= 3).count();
@@ -99,10 +101,24 @@ public class API01 {
         boolean b = s1.anyMatch(i -> i > 5);
         boolean b1 = s1.noneMatch(i -> i < 100);
     }
+
+    /** 根据指定标准返回序列
+     * static<T> Stream<T> iterate(final T seed, final UnaryOperator<T> f)
+     * 传入UnaryOperator迭代函数(Function的子类) 和起始值seed，返回序列
+     * Iterator<T> iterator()
+     * 终结操作，返回流的迭代器
+     */
+    static void test06(){
+        Iterator<Integer> iter = Stream.iterate(0,n -> n+1).limit(10).iterator();
+        while (iter.hasNext()) {
+            System.out.println(iter.next());//0 1 2 3 4 ..
+        }
+
+    }
     public static void main(String[] args) {
         test.add("001");
         test.add("002");
         test.add("003");
-        test03();
+        test06();
     }
 }
