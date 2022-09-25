@@ -47,7 +47,7 @@ public class Practice2 {
     @Benchmark
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     public static int testintmap(MyState state){
-         return state.intmapImpl.get(state.index);
+        return state.intmapImpl.get(state.index);
     }
 
     @Benchmark

@@ -11,6 +11,16 @@
       <span>主页</span>
     </el-menu-item>
 
+    <el-menu-item index="add">
+      <el-icon><upload /></el-icon>
+      <span>上传数据</span>
+    </el-menu-item>
+
+    <el-menu-item index="search">
+      <el-icon><search /></el-icon>
+      <span>查询数据</span>
+    </el-menu-item>
+
     <el-menu-item index="others" disabled>
       <el-icon><document /></el-icon>
       <span>敬请期待</span>

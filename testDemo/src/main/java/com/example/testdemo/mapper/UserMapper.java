@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface UserMapper {
-  @Insert("insert into \"user\" (username, password, nick_name, sex, isadmin, img)values (#{username},#{password},#{nickName},#{sex},false,'')")
+  @Insert("insert into sustc.public.user (username, password, nick_name, sex, admin, img)values (#{username},#{password},#{nickName},#{sex},false,'')")
   void add(User user);
 
   @Select("select * from \"user\" where #{id} = id")

@@ -1,7 +1,7 @@
 <template>
   <div style="height: 50px; line-height: 50px; border-bottom: 1px solid #ccc ; background-color: lightgray;
   display: flex">
-    <div style="width: 60%;padding-left: 30px;font-weight: bold;color: darkslateblue">这是一段测试捏</div>
+    <div style="width: 60%;padding-left: 30px;font-weight: bold;color: darkslateblue">SUSTC 管理系统</div>
     <div style="flex: 1"></div>
     <div style="width: 200px">
         <span class="el-avatar el-avatar--circle" style="height: 40px; width: 40px; line-height: 40px;">
@@ -34,10 +34,10 @@ export default {
     return{
       info:"",
       user:{
-        id:1,
+        id:0,
         username:'',
         nickName:'',
-        isAdmin:false,
+        admin:false,
         img:"",
       },
     }
@@ -53,7 +53,7 @@ export default {
         if (res.code === '0'){
           console.log(res.data);
           this.user = JSON.parse(res.data);
-          this.info = (this.user.isAdmin === 'true') ? "管理员":"用户"
+          this.info = (this.user.admin === 'true') ? "管理员":"用户"
         }else {
           this.$message({
             type : "error",

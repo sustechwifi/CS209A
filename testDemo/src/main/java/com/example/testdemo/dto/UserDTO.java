@@ -14,7 +14,7 @@ public class UserDTO {
     private String username;
     private String nickName;
     private String img;
-    private boolean isAdmin;
+    private boolean admin;
 
     public String getUsername() {
         return username;
@@ -25,11 +25,11 @@ public class UserDTO {
     }
 
     public boolean isAdmin() {
-        return isAdmin;
+        return admin;
     }
 
     public void setAdmin(boolean admin) {
-        isAdmin = admin;
+        this.admin = admin;
     }
 
     public Integer getId() {

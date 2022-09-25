@@ -18,10 +18,9 @@ public class User {
 
     private String nickName;
 
-
     private String sex;
 
-    private boolean isAdmin;
+    private boolean admin;
 
     private String img;
 
@@ -34,11 +33,11 @@ public class User {
     }
 
     public boolean isAdmin() {
-        return isAdmin;
+        return admin;
     }
 
     public void setAdmin(boolean admin) {
-        isAdmin = admin;
+        this.admin = admin;
     }
 
     public Integer getId() {

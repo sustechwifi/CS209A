@@ -1,6 +1,6 @@
 // 跨域配置
 
-let ip =  '192.168.105.202'
+let ip =  'localhost'
 
 module.exports = {
   devServer: {                //记住，别写错了devServer//设置本地默认端口  选填
