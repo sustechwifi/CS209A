@@ -14,4 +14,8 @@ public class TransitService {
     public void add(Transit transit){
         transitMapper.add(transit);
     }
+
+    public void deleteAll(){
+        transitMapper.deleteAll();
+    }
 }

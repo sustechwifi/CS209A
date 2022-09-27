@@ -29,7 +29,7 @@ public class UserService {
     @Resource
     StringRedisTemplate stringRedisTemplate;
 
-    public int addUser(User user){
+    public int addUser(User user) {
         if (user == null) {
             return 1;
         }
@@ -37,23 +37,23 @@ public class UserService {
         return 0;
     }
 
-    public PageBean<User> selectByCondition(int PageNum, int PageSize, User user){
+    public PageBean<User> selectByCondition(int PageNum, int PageSize, User user) {
 
-        int begin = (PageNum-1)*PageSize;
+        int begin = (PageNum - 1) * PageSize;
 
         //设置模糊表达式
         String username = user.getUsername();
-        if (username!= null && !"".equals(username)){
-            user.setUsername("%"+username+"%");
+        if (username != null && !"".equals(username)) {
+            user.setUsername("%" + username + "%");
         }
 
         String nickName = user.getNickName();
-        if (nickName!= null && !"".equals(nickName)){
-            user.setNickName("%"+nickName+"%");
+        if (nickName != null && !"".equals(nickName)) {
+            user.setNickName("%" + nickName + "%");
         }
-        int end = begin+PageSize;
-        System.out.println("start:"+begin);
-        System.out.println("end:"+end);
+        int end = begin + PageSize;
+        System.out.println("start:" + begin);
+        System.out.println("end:" + end);
         List<User> users = userMapper.selectByPagination(begin, end, user);
         int total = userMapper.selectTotalCount(user);
 
@@ -65,7 +65,7 @@ public class UserService {
     }
 
 
-    public int updateUser(User user){
+    public int updateUser(User user) {
         if (user == null) {
             return 1;
         }
@@ -73,50 +73,49 @@ public class UserService {
         return 0;
     }
 
-    public void deleteUserById(long id){
+    public void deleteUserById(long id) {
         userMapper.deleteByUserId(id);
     }
 
-    public void deleteUserByIds(long[] ids){
+    public void deleteUserByIds(long[] ids) {
         userMapper.deleteByIds(ids);
     }
 
-    public Result<?> login(User user){
+    public Result<?> login(User user) {
         User userLogin = userMapper.userLogin(user);
-        if (userLogin == null){
+        if (userLogin == null) {
             return Result.error("109", "用户名或密码错误");
-        }
-        else {
+        } else {
             //生成随机token
             String token = UUID.randomUUID().toString(true);
-            UserDTO userDTO = BeanUtil.copyProperties(userLogin,UserDTO.class);
+            UserDTO userDTO = BeanUtil.copyProperties(userLogin, UserDTO.class);
 
-            Map<String, Object> userMap = BeanUtil.beanToMap(userDTO,new HashMap<>(),
+            Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(),
                     CopyOptions.create()
                             .setIgnoreNullValue(true)
-                            .setFieldValueEditor((fieldName,fieldValue) -> fieldValue.toString()));
+                            .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
 
             String tokenKey = LOGIN_USER_KEY + token;
 
             stringRedisTemplate.opsForValue().set(tokenKey, JSONUtil.toJsonStr(userMap));
-            stringRedisTemplate.expire(tokenKey,LOGIN_USER_TTL, TimeUnit.SECONDS);
+            stringRedisTemplate.expire(tokenKey, LOGIN_USER_TTL, TimeUnit.SECONDS);
 
             return Result.success(tokenKey);
         }
     }
 
-    public boolean checkUser(User user){
+    public boolean checkUser(User user) {
         User result = userMapper.checkUser(user);
         System.out.println(result);
         return result == null;
     }
 
-    public void updateUserImg(String url,long id){
+    public void updateUserImg(String url, long id) {
         System.out.println(url);
         userMapper.changeImg(url, id);
     }
 
-    public String findUserImg(String username){
+    public String findUserImg(String username) {
         return userMapper.findImg(username);
     }
 

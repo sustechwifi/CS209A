@@ -11,7 +11,11 @@ public class HandleService {
     @Resource
     HandleMapper handleMapper;
 
-    public void add(Handle handle){
+    public void add(Handle handle) {
         handleMapper.add(handle);
+    }
+
+    public void deleteAll() {
+        handleMapper.deleteAll();
     }
 }
