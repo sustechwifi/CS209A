@@ -17,13 +17,17 @@ import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DataInsertService {
-
     private static final String FORMAT = "Item Name,Item Type,Item Price,Retrieval City,Retrieval Start Time,Retrieval Courier,Retrieval Courier Gender,Retrieval Courier Phone Number,Retrieval Courier Age,Delivery Finished Time,Delivery City,Delivery Courier,Delivery Courier Gender,Delivery Courier Phone Number,Delivery Courier Age,Item Export City,Item Export Tax,Item Export Time,Item Import City,Item Import Tax,Item Import Time,Container Code,Container Type,Ship Name,Company Name,Log Time";
     private static final String DELIMITER = ",";
     private static final long M = 1024L * 1024;
+    private static final int DEFAULT_THREAD_NUM = 10;
+    private static final int DEFAULT_THREAD_CAPACITY = 50000;
+
     @Resource
     CompanyService companyService;
     @Resource
@@ -73,7 +77,7 @@ public class DataInsertService {
     }
 
     /**
-     * 从上到下按行插入,适用于小型文件(大小小于 1M)
+     * 从上到下按行插入
      *
      * @param br 缓冲流
      * @throws IOException
@@ -87,17 +91,21 @@ public class DataInsertService {
                 System.out.println("当前已处理条数:" + cnt);
             }
             cnt++;
-            String[] columns = line.split(DELIMITER);
-            int[] ids = insertCommon(columns);
-            if (!StringUtils.isEmpty(columns[9])) {
-                insertFinished(columns, ids);
-            } else if (!StringUtils.isEmpty(columns[20])) {
-                insertUnDelivered(columns, ids);
-            } else if (!StringUtils.isEmpty(columns[23])) {
-                insertExported(columns, ids);
-            } else {
-                insertUnExported(columns, ids);
-            }
+            insertByString(line);
+        }
+    }
+
+    public void insertByString(String line) throws ParseException {
+        String[] columns = line.split(DELIMITER);
+        int[] ids = insertCommon(columns);
+        if (!StringUtils.isEmpty(columns[9])) {
+            insertFinished(columns, ids);
+        } else if (!StringUtils.isEmpty(columns[20])) {
+            insertUnDelivered(columns, ids);
+        } else if (!StringUtils.isEmpty(columns[23])) {
+            insertExported(columns, ids);
+        } else {
+            insertUnExported(columns, ids);
         }
     }
 
@@ -188,6 +196,44 @@ public class DataInsertService {
 
     }
 
+
+    @Transactional
+    public synchronized Result<?> insertToDataBaseByThread(String path) {
+        long begin = System.currentTimeMillis();
+        String line = "";
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(path), Charset.forName("GBK"))) {
+            line = br.readLine();
+            if (!line.equals(FORMAT)) {
+                System.out.println("csv 文件格式不正确！");
+                return Result.error("103", "csv 文件格式不正确！");
+            }
+            long length = new File(path).length();
+            System.out.println("文件大小为" + length + "b,约合" + (length / M) + "mb");
+            List<String> list = new ArrayList<>(DEFAULT_THREAD_CAPACITY);
+            List<MyThread> threads = new ArrayList<>();
+            int cnt = 0;
+            while ((line = br.readLine()) != null) {
+                list.add(line);
+                if (list.size() == DEFAULT_THREAD_CAPACITY) {
+                    MyThread thread = new MyThread(new ArrayList<>(list), this, ++cnt);
+                    thread.start();
+                    list.clear();
+                    threads.add(thread);
+                }
+            }
+            for (MyThread thread : threads) {
+                thread.join();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(line);
+            return Result.error("203", e.getMessage());
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("操作用时: " + (end - begin) + "ms");
+        return Result.success("操作用时: " + (end - begin) + "ms");
+    }
+
     @Transactional
     public Result<?> deleteAll() {
         long start = System.currentTimeMillis();
@@ -203,4 +249,28 @@ public class DataInsertService {
         return Result.success("用时：" + (end - start) + "ms");
     }
 
+}
+
+class MyThread extends Thread {
+    DataInsertService dataInsertService;
+    List<String> recordsList;
+    int threadNum;
+
+    public MyThread(List<String> recordsList, DataInsertService dataInsertService, int threadNum) {
+        this.recordsList = recordsList;
+        this.dataInsertService = dataInsertService;
+        this.threadNum = threadNum;
+    }
+
+    @Override
+    public void run() {
+        for (String s : recordsList) {
+            try {
+                dataInsertService.insertByString(s);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.printf("线程%d已结束，处理数据量%d\n", threadNum, recordsList.size());
+    }
 }

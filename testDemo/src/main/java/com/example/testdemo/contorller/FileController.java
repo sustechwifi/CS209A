@@ -1,6 +1,7 @@
 package com.example.testdemo.contorller;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.net.multipart.UploadFile;
 import cn.hutool.core.util.IdUtil;
 import com.example.testdemo.component.Result;
 import com.example.testdemo.service.DataInsertService;
@@ -18,10 +19,10 @@ public class FileController {
     DataInsertService dataInsertService;
 
     /*状态  检索     出关      入关     配送   备注
-    * 未出关  1       0       0        0    没有ship,container
-    * 未入关  1       1       0        0    没有import time
-    * 未配送  1       1       1        0    没有deliver快递员
-    * 已完成  1       1       1        1
+     * 未出关  1       0       0        0    没有ship,container
+     * 未入关  1       1       0        0    没有import time
+     * 未配送  1       1       1        0    没有deliver快递员
+     * 已完成  1       1       1        1
      */
 
     @CrossOrigin
@@ -40,9 +41,14 @@ public class FileController {
     }
 
     @PostMapping("/uploadLocal")
-    public Result<?> uploadLocal(@RequestBody String path) {
+    public Result<?> uploadLocal(@RequestBody UploadBody body) {
         System.out.println("请等待---");
-        return dataInsertService.insertToDataBase(path);
+        if (body.isThread()) {
+            System.out.println("已开启多线程插入");
+            return dataInsertService.insertToDataBaseByThread(body.getPath());
+        } else {
+            return dataInsertService.insertToDataBase(body.getPath());
+        }
     }
 
     @DeleteMapping("/deleteAll")
@@ -50,4 +56,17 @@ public class FileController {
         return dataInsertService.deleteAll();
     }
 
+}
+
+class UploadBody {
+    private String path;
+    private boolean thread;
+
+    public String getPath() {
+        return path;
+    }
+
+    public boolean isThread() {
+        return thread;
+    }
 }

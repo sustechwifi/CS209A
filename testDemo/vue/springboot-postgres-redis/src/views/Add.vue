@@ -30,9 +30,9 @@
       <el-footer>
         <el-row>
           <el-switch
-              v-model="local"
+              v-model="local.chosen"
               size="large"
-              active-text="使用本地文件"
+              active-text="使用本地大文件"
               style="padding-right: 20px"
           />
           <el-upload ref="uploadRef" class="upload-demo" action="" :auto-upload="false">
@@ -40,9 +40,19 @@
               <el-button type="primary" size="default">浏览文件</el-button>
             </template>
           </el-upload>
-          <el-input style="width: 50%;padding-right: 50px;padding-left: 50px" v-model="path" :disabled="!local" size="default"
-                    placeholder="Please input path"/>
-          <el-button type="primary" size="default" @click="uploadLocal">确认</el-button>
+        </el-row>
+        <el-row>
+          <div :hidden="!local.chosen" style="width: 1000px">
+            <el-input v-model="local.path" style="padding-top: 50px;padding-right: 50px;width: 400px" size="default"
+                      placeholder="Please input path"/>
+            <el-button type="primary" size="default" @click="uploadLocal">确认</el-button>
+            <el-switch
+                v-model="local.thread"
+                size="default"
+                active-text="开启多线程加速"
+                style="padding-left: 20px"
+            />
+          </div>
         </el-row>
       </el-footer>
     </el-container>
@@ -62,20 +72,19 @@ export default {
         if (res.code === '0') {
           this.$message({
             type: "success",
-            message: "删除成功,"+res.data
+            message: "删除成功," + res.data
           })
         }
       })
     },
-    uploadLocal(){
-      request.post("/file/uploadLocal",this.path).then(res =>{
+    uploadLocal() {
+      request.post("/file/uploadLocal", this.local).then(res => {
         if (res.code === '0') {
           this.$message({
             type: "success",
-            message: "上传成功"+res.data
+            message: "上传成功" + res.data
           })
-        }
-        else {
+        } else {
           this.$message({
             type: "error",
             message: res.msg
@@ -86,8 +95,11 @@ export default {
   },
   data() {
     return {
-      local: false,
-      path: '',
+      local:{
+       chosen : false,
+       path: '',
+       thread: false
+      }
     }
   }
 }
