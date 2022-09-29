@@ -11,12 +11,6 @@
     margin: 0;
 }
 
-.el-dialog {
-    text-align: center;
-    margin-top: 200px;
-    background-image: url('@/imgs/bg.jpg');
-}
-
 .el-menu-item {
     background-color: #eddcab;
 }
