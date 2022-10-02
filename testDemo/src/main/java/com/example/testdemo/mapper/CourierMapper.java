@@ -3,6 +3,7 @@ package com.example.testdemo.mapper;
 import com.example.testdemo.entity.Courier;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 public interface CourierMapper {
@@ -11,9 +12,14 @@ public interface CourierMapper {
             "values (#{phoneNumber},#{name},#{age},#{gender},#{companyId},#{cityId}) on conflict do nothing")
     void add(Courier courier);
 
-    @Select("select id from sustc.public.courier where name = #{name} and phone_number = #{phoneNumber}")
-    int getId(Courier courier);
+
+    Integer getId(@Param("courier") Courier courier);
 
     @Delete("delete from sustc.public.courier")
     void deleteAll();
+
+
+    Courier selectById(int id);
+
+    Courier getCourier(@Param("courier") Courier courier);
 }

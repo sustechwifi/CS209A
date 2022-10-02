@@ -12,9 +12,11 @@ public interface CityMapper {
     void add(City city);
 
     @Select("select id from sustc.public.city where name = #{name}")
-    int getId(String name);
+    Integer getId(String name);
 
     @Delete("delete from sustc.public.city")
     void deleteAll();
 
+    @Select("select name from sustc.public.city where id = #{id}")
+    String getCityName(int id);
 }

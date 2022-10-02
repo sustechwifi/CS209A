@@ -8,22 +8,22 @@
   >
     <el-menu-item index="home">
       <el-icon><house /></el-icon>
-      <span>主页</span>
+      <span>Home Page</span>
     </el-menu-item>
 
     <el-menu-item index="add">
       <el-icon><upload /></el-icon>
-      <span>上传数据</span>
+      <span>upload data</span>
     </el-menu-item>
 
     <el-menu-item index="search">
       <el-icon><search /></el-icon>
-      <span>查询数据</span>
+      <span>query & DML</span>
     </el-menu-item>
 
     <el-menu-item index="others" disabled>
       <el-icon><document /></el-icon>
-      <span>敬请期待</span>
+      <span>special query</span>
     </el-menu-item>
 
   </el-menu>

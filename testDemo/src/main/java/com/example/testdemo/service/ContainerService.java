@@ -8,6 +8,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -23,15 +26,49 @@ public class ContainerService {
         return containerMapper.getId(container);
     }
 
-    public int getId(Container container) {
+    public Integer getId(Container container) {
+        if (container == null || StringUtils.isEmpty(container.getCode())) {
+            return null;
+        }
         String key = RedisConstants.INSERT_CONTAINER_KEY + container.getCode();
         if (idRedisTemplate.hasKey(key)) {
             return Integer.parseInt(idRedisTemplate.opsForValue().get(key));
         }
-        int res = containerMapper.getId(container);
+        Integer res = containerMapper.getId(container);
+        if (res == null) {
+            return null;
+        }
         idRedisTemplate.opsForValue().set(key, String.valueOf(res));
         idRedisTemplate.expire(key, RedisConstants.INSERT_TTL, TimeUnit.SECONDS);
         return res;
+    }
+
+    public Container getContainerById(Integer id) {
+        if (id == null) {
+            return null;
+        }
+        return containerMapper.getContainerById(id);
+    }
+
+    public Container formContainer(Container container) {
+        return Objects.requireNonNullElseGet(container, Container::new);
+    }
+
+    public Integer[] getIds(Container container) {
+        if (!StringUtils.isEmpty(container.getCode())) {
+            Integer id = getId(container);
+            if (id == null) {
+                return null;
+            }
+            return new Integer[]{id};
+        } else {
+            List<Integer> ids = containerMapper.getIds(container.getType());
+            if (ids.isEmpty()) {
+                return null;
+            } else {
+                return ids.toArray(Integer[]::new);
+            }
+        }
     }
 
     public void deleteAll() {

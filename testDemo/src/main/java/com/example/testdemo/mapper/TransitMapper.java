@@ -3,7 +3,12 @@ package com.example.testdemo.mapper;
 import com.example.testdemo.entity.Transit;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface TransitMapper {
@@ -13,4 +18,15 @@ public interface TransitMapper {
 
     @Delete("delete from sustc.public.transit")
     void deleteAll();
+
+
+    Transit getTransitsByModel(Transit transit);
+
+
+    List<Transit> getTransitsByRecordId(@Param("id") int id);
+
+    List<Integer> getRecordIdByDateAndType(@Param("date") Date date, @Param("type") int type);
+
+    List<Integer> getRecordIdByTaxAndType(@Param("tax") Double tax, @Param("type") int type);
 }
+

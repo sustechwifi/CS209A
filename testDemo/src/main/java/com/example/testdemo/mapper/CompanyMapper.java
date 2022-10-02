@@ -12,7 +12,7 @@ public interface CompanyMapper {
     void addCompany(String companyName);
 
     @Select("select id from sustc.public.company where name = #{companyName}")
-    int getId(String companyName);
+    Integer getId(String companyName);
 
     @Select("select name from sustc.public.company where id = #{id}")
     String getCompanyName(int id);

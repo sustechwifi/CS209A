@@ -12,6 +12,55 @@
         <result column="city_id" property="cityId"/>
     </resultMap>
 
+    <select id="getCourier" resultMap="courierRM">
+        select * from sustc.public.courier
+        <where>
+            <if test="courier.phoneNumber != null and courier.phoneNumber != ''">
+                and phone_number = #{courier.phoneNumber}
+            </if>
+            <if test="courier.name != null and courier.name != ''">
+                and "name" = #{courier.name}
+            </if>
+            <if test="courier.age != null">
+                and age = #{courier.age}
+            </if>
+            <if test="courier.gender != null">
+                and gender = #{courier.gender}
+            </if>
+            <if test="courier.companyId != null">
+                and company_id = #{courier.companyId}
+            </if>
+            <if test="courier.cityId != null">
+                and city_id = #{courier.cityId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getId" resultType="java.lang.Integer">
+        select id from sustc.public.courier
+        <where>
+            <if test="courier.name != null and courier.name != ''">
+                and name = #{courier.name}
+            </if>
+            <if test="courier.phoneNumber != null and courier.phoneNumber != ''">
+                and phone_number = #{courier.phoneNumber}
+            </if>
+            <if test="courier.companyId != null">
+                and company_id = #{courier.companyId}
+            </if>
+            <if test="courier.cityId != null">
+                and cityId = #{courier.cityId}
+            </if>
+            <if test="courier.gender != null">
+                and gender = #{courier.gender}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="selectById" resultMap="courierRM">
+        select * from sustc.public.courier where id = #{id}
+    </select>
 
 
 </mapper>

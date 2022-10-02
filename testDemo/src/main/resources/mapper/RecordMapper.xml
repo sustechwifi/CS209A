@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.example.testdemo.mapper.RecordMapper">
+
+    <resultMap id="recordRM" type="com.example.testdemo.entity.Record">
+        <result column="log_time" property="logTime"/>
+        <result column="item_name" property="itemName"/>
+        <result column="item_class" property="itemClass"/>
+        <result column="item_price" property="itemPrice"/>
+        <result column="company_id" property="companyId"/>
+        <result column="container_id" property="containerId"/>
+        <result column="ship_id" property="shipId"/>
+    </resultMap>
+
+    <select id="getRecordsByModel" resultMap="recordRM">
+        select *
+        from sustc.public.record
+    </select>
+
+    <select id="getIds" resultType="java.lang.Integer">
+        select id from sustc.public.record
+        <where>
+            <if test="record.itemName != null and record.itemName != ''">
+                and item_name = #{record.itemName}
+            </if>
+            <if test="record.companyId != null">
+                and company_id = #{record.companyId}
+            </if>
+            <if test="record.containerId != null">
+                and container_id = #{record.containerId}
+            </if>
+            <if test="record.shipId != null ">
+                and ship_id = #{record.shipId}
+            </if>
+            <if test="record.itemClass != null and record.itemClass != '' ">
+                and item_class = #{record.itemClass}
+            </if>
+            <if test="record.itemPrice != null">
+                and item_price = #{record.itemPrice}
+            </if>
+            <if test="record.state != 0">
+                and state = #{record.state}
+            </if>
+        </where>
+    </select>
+
+    <select id="getRecordById" resultMap="recordRM">
+        select *
+        from sustc.public.record
+        where id = #{id}
+    </select>
+
+    <select id="getRecordByIds" resultMap="recordRM">
+        select * from sustc.public.record where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
+
+</mapper>

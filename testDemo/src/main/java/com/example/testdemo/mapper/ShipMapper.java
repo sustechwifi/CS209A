@@ -15,10 +15,12 @@ public interface ShipMapper {
     void add(Ship ship);
 
     @Select("select id from sustc.public.ship where name = #{name}")
-    int getId(Ship ship);
+    Integer getId(Ship ship);
 
     @Delete("delete from sustc.public.ship")
     void deleteAll();
 
 
+    @Select("select * from sustc.public.ship where id = #{id}")
+    Ship getShipById(int id);
 }

@@ -4,7 +4,7 @@
       <el-header>
         <hr>
         <div style="margin: 20px">
-          <el-button type="danger" size="default" @click="deleteAll">清除所有数据</el-button>
+          <el-button type="danger" size="default" @click="deleteAll">drop all</el-button>
         </div>
       </el-header>
       <el-main>
@@ -18,7 +18,7 @@
             <upload-filled/>
           </el-icon>
           <div class="el-upload__text">
-            拖拽文件到此处 或<em>点击上传</em>
+            drag files here or<em>click to upload</em>
           </div>
           <template #tip>
             <div class="el-upload__tip">
@@ -32,12 +32,12 @@
           <el-switch
               v-model="local.chosen"
               size="large"
-              active-text="使用本地大文件"
+              active-text="use local file(server only)"
               style="padding-right: 20px"
           />
           <el-upload ref="uploadRef" class="upload-demo" action="" :auto-upload="false">
             <template #trigger>
-              <el-button type="primary" size="default">浏览文件</el-button>
+              <el-button type="primary" size="default">Browse for the file</el-button>
             </template>
           </el-upload>
         </el-row>
@@ -45,11 +45,11 @@
           <div :hidden="!local.chosen" style="width: 1000px">
             <el-input v-model="local.path" style="padding-top: 50px;padding-right: 50px;width: 400px" size="default"
                       placeholder="Please input path"/>
-            <el-button type="primary" size="default" @click="uploadLocal">确认</el-button>
+            <el-button type="primary" size="default" @click="uploadLocal">confirm</el-button>
             <el-switch
                 v-model="local.thread"
                 size="default"
-                active-text="开启多线程加速"
+                active-text="Multi-threaded accelerate"
                 style="padding-left: 20px"
             />
           </div>
@@ -72,7 +72,7 @@ export default {
         if (res.code === '0') {
           this.$message({
             type: "success",
-            message: "删除成功," + res.data
+            message: "delete successfully," + res.data
           })
         }
       })
@@ -82,7 +82,7 @@ export default {
         if (res.code === '0') {
           this.$message({
             type: "success",
-            message: "上传成功" + res.data
+            message: "upload successfully" + res.data
           })
         } else {
           this.$message({

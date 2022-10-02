@@ -20,4 +20,5 @@ public class Record {
     private Integer containerId;
     private Integer shipId;
     private Integer id;
+    private int state;
 }

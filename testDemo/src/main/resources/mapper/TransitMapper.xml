@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.example.testdemo.mapper.TransitMapper">
+
+    <resultMap id="transitRM" type="com.example.testdemo.entity.Transit">
+        <result column="record_id" property="recordId"/>
+        <result column="city_id" property="cityId"/>
+    </resultMap>
+
+
+    <select id="getTransitsByModel" resultMap="transitRM">
+        select * from sustc.public.transit
+        <where>
+           <if test="type != 0">
+               and type = #{type}
+           </if>
+            <if test="time != null">
+                and time = #{time}
+            </if>
+            <if test="tax != null">
+                and tax = #{tax}
+            </if>
+            <if test="city_id != null">
+                and city_id = #{cityId}
+            </if>
+            and record_id = #{recordId}
+        </where>
+
+    </select>
+
+    <select id="getTransitsByRecordId" resultMap="transitRM">
+        select * from sustc.public.transit where record_id = #{id} limit 4;
+    </select>
+
+    <select id="getRecordIdByDateAndType" resultType="java.lang.Integer">
+        select record_id from sustc.public.transit where type = #{type}and time = #{date};
+    </select>
+
+    <select id="getRecordIdByTaxAndType" resultType="java.lang.Integer">
+        select record_id from sustc.public.transit where type = #{type} and tax = #{tax};
+    </select>
+
+
+</mapper>

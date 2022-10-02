@@ -8,6 +8,12 @@ public class PageBean<T> {
 
     private List<T> rows;
 
+    private String msg;
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
     public int getTotalCount() {
         return totalCount;
     }
@@ -22,6 +28,15 @@ public class PageBean<T> {
 
     public void setRows(List<T> rows) {
         this.rows = rows;
+    }
+
+    public PageBean(int totalCount, List<T> rows) {
+        this.totalCount = totalCount;
+        this.rows = rows;
+    }
+
+    public PageBean() {
+
     }
 
     @Override

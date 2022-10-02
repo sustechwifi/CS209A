@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ContainerMapper {
 
@@ -13,8 +15,14 @@ public interface ContainerMapper {
     void add(Container container);
 
     @Select("select id from sustc.public.container where code = #{code}")
-    int getId (Container container);
+    Integer getId (Container container);
 
     @Delete("delete from sustc.public.container")
     void deleteAll();
+
+
+    Container getContainerById(Integer id);
+
+
+    List<Integer> getIds(String type);
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.example.testdemo.mapper.ContainerMapper">
+
+    <resultMap id="courierRM" type="com.example.testdemo.entity.Container">
+
+    </resultMap>
+
+    <select id="getIds" resultType="java.lang.Integer">
+        select id from sustc.public.container where type = #{type}
+    </select>
+
+    <select id="getContainerById" resultType="com.example.testdemo.entity.Container">
+        select * from sustc.public.container where id = #{id}
+    </select>
+
+
+</mapper>
