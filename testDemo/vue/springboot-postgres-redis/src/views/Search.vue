@@ -13,7 +13,6 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item command="item">Item Class</el-dropdown-item>
-            <el-dropdown-item command="city">City</el-dropdown-item>
             <el-dropdown-item command="courier">Courier name</el-dropdown-item>
             <el-dropdown-item command="ship">Ship name</el-dropdown-item>
             <el-dropdown-item command="company">Company name</el-dropdown-item>
@@ -28,7 +27,7 @@
     </div>
 
     <el-row style="padding-left: 30px">
-      <el-radio-group v-model="searchType">
+      <el-radio-group v-model="searchType" @change="handlePreciseSearch">
         <el-radio :label="0">All</el-radio>
         <el-radio :label="1">Not exported</el-radio>
         <el-radio :label="2">Exported</el-radio>
@@ -67,12 +66,13 @@
           <span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</span>
           <el-input style="width: 200px" v-model="form.retrievalCourierPhone" placeholder="phone number *"/>
         </el-form-item>
-        <el-form-item label="Retrieval courier gender">
+        <el-form-item label="Retrieval courier gender and age">
           <el-radio-group v-model="form.retrievalCourierGender">
             <el-radio :label="undefined">null</el-radio>
             <el-radio :label="1">male</el-radio>
             <el-radio :label="2">female</el-radio>
           </el-radio-group>
+          <el-input style="width: 100px;padding-left: 50px" v-model="form.retrievalCourierAge" placeholder="age"/>
         </el-form-item>
         <el-form-item label="Delivery city and date">
           <el-input style="width: 150px" v-model="form.deliveryCity" placeholder="retrieval city"/>
@@ -91,12 +91,13 @@
           <span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</span>
           <el-input style="width: 200px" v-model="form.deliveryCourierPhone" placeholder="phone number *"/>
         </el-form-item>
-        <el-form-item label="Delivery courier gender">
+        <el-form-item label="Delivery courier gender and age">
           <el-radio-group v-model="form.deliveryCourierGender">
             <el-radio :label="undefined">null</el-radio>
             <el-radio :label="1">male</el-radio>
             <el-radio :label="2">female</el-radio>
           </el-radio-group>
+          <el-input style="width: 100px;padding-left: 50px" v-model="form.deliveryCourierAge" placeholder="age"/>
         </el-form-item>
 
         <el-form-item label="Item export">
@@ -145,7 +146,7 @@
 
       </el-form>
 
-
+      <el-alert title="at least 1 column with '*' should be filled" type="warning"/>
       <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">Cancel</el-button>
@@ -172,7 +173,7 @@
       <el-table-column prop="content" label="Retrieval">
         <template v-slot="scope">
           <el-input v-model="scope.row.retrievalCity"></el-input>
-          <el-input v-model="scope.row.retrievalDate"></el-input>
+          <Span>{{ getDate(scope.row.retrievalDate) }}</Span>
         </template>
       </el-table-column>
 
@@ -188,7 +189,7 @@
       <el-table-column prop="content" label="Export">
         <template v-slot="scope">
           <el-input v-model="scope.row.exportCity"></el-input>
-          <el-input v-model="scope.row.exportDate"></el-input>
+          <Span>{{ getDate(scope.row.exportDate) }}</Span>
           <el-input v-model="scope.row.exportTax"></el-input>
         </template>
       </el-table-column>
@@ -196,7 +197,7 @@
       <el-table-column prop="content" label="Import">
         <template v-slot="scope">
           <el-input v-model="scope.row.importCity"></el-input>
-          <el-input v-model="scope.row.importDate"></el-input>
+          <Span>{{ getDate(scope.row.importDate) }}</Span>
           <el-input v-model="scope.row.importTax"></el-input>
         </template>
       </el-table-column>
@@ -204,7 +205,7 @@
       <el-table-column prop="content" label="Delivery">
         <template v-slot="scope">
           <el-input v-model="scope.row.deliveryCity"></el-input>
-          <el-input v-model="scope.row.deliveryDate"></el-input>
+          <Span>{{ getDate(scope.row.deliveryDate) }}</Span>
         </template>
       </el-table-column>
 
@@ -229,25 +230,15 @@
           <el-input v-model="scope.row.containerType"></el-input>
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="log time">
+      <el-table-column prop="name" label="log time" width="200px">
         <template v-slot="scope">
-          <el-input v-model="scope.row.logTime"></el-input>
+          <Span>{{ getTime(scope.row.logTime) }}</Span>
         </template>
       </el-table-column>
 
-      <el-table-column label="Operations">
+      <el-table-column label="Operations" width="100px">
         <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-          >Edit
-          </el-button
-          >
-          <el-button
-              size="small"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)"
-          >Delete
-          </el-button
-          >
+          <el-button @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -284,17 +275,12 @@ export default {
           pageSize: this.pageSize
         }
       }).then(res => {
-        if (res.code === '0') {
-          this.$message({
-            type: "success",
-            message: "查询完毕，" + res.msg
-          })
-        } else {
-          this.$message({
-            type: "error",
-            message: res.msg
-          })
-        }
+        this.tableData = res.rows;
+        this.totalRows = res.totalCount;
+        this.$message({
+          type: "success",
+          message: "查询完毕"
+        })
       })
     },
     handleCommand(command) {
@@ -308,12 +294,13 @@ export default {
           "/" + this.currentPage
           , this.form).then(res => {
         this.tableData = res.rows;
-        this.totalRows = res.totalCount-1;
+        this.totalRows = res.totalCount;
         console.log(res.rows)
         this.$message({
           type: "success",
           message: "查询完毕"
         })
+        this.dialogVisible = false;
       });
     },
     handleSelectionChange() {
@@ -325,8 +312,31 @@ export default {
     handleDelete() {
 
     },
-    showContent(row) {
-
+    getDate(value) {//调用时间戳为日期显示
+      if (!value)return '未进行';
+      let date = new Date(value)
+      let y = date.getFullYear()  //获取年份
+      let m = date.getMonth() + 1  //获取月份
+      m = m < 10 ? "0" + m : m  //月份不满10天显示前加0
+      let d = date.getDate()  //获取日期
+      d = d < 10 ? "0" + d : d  //日期不满10天显示前加0
+      return y + "-" + m + "-" + d
+    },
+    getTime(value) {//调用时间戳为日期显示
+      if (!value)return '';
+      let date = new Date(value)
+      let y = date.getFullYear()  //获取年份
+      let m = date.getMonth() + 1  //获取月份
+      m = m < 10 ? "0" + m : m  //月份不满10天显示前加0
+      let d = date.getDate()  //获取日期
+      d = d < 10 ? "0" + d : d  //日期不满10天显示前加0
+      let h = date.getHours();                   //小时
+      h = h < 10 ? "0" + h : h  //日期不满10天显示前加0
+      let mm = date.getMinutes();                 //分
+      mm = mm < 10 ? "0" + mm : mm  //日期不满10天显示前加0
+      let s = date.getSeconds();                 //秒
+      s = s < 10 ? "0" + s : s  //日期不满10天显示前加0
+      return y + "-" + m + "-" + d + " " + h + ":" + mm + ":" + s
     },
     handleSizeChange() {
       this.handlePreciseSearch();
@@ -354,11 +364,11 @@ export default {
         retrievalCity: '',
         retrievalCourier: '',
         retrievalCourierPhone: '',
-        retrievalCourierGender:undefined,
+        retrievalCourierGender: undefined,
         deliveryCity: '',
         deliveryCourier: '',
         deliveryCourierPhone: '',
-        deliveryCourierGender:undefined,
+        deliveryCourierGender: undefined,
         containerCode: '',
         containerType: '',
         exportTax: undefined,
@@ -367,7 +377,7 @@ export default {
         importCity: '',
       },
     }
-  }
+  },
 }
 </script>
 

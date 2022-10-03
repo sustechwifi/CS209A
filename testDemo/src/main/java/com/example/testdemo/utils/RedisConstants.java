@@ -13,6 +13,11 @@ public class RedisConstants {
     public static final String INSERT_CONTAINER_KEY = "test:insert:container:";
     public static final String INSERT_COURIER_KEY = "test:insert:courier:";
 
+    public static final String SEARCH_PRECISE_KEY = "test:search:precise:";
+
+    public static String formatPageBean(int begin, int size) {
+        return ":" + begin + ":" + size;
+    }
 
 
 }

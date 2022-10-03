@@ -61,5 +61,9 @@
         </foreach>
     </select>
 
+    <select id="getIdsByType" resultType="java.lang.Integer">
+        select id from sustc.public.record where state = #{type}
+    </select>
+
 
 </mapper>

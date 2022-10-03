@@ -31,4 +31,6 @@ public interface RecordMapper {
     Record getRecordById(@Param("id") int id);
 
     List<Record> getRecordByIds(@Param("ids") Integer[] ids);
+
+    List<Integer> getIdsByType(int type);
 }

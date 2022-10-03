@@ -41,6 +41,16 @@ public class CourierService {
         return res;
     }
 
+    public boolean checkAgeAndGender(Courier courier, Integer age, Integer gender) {
+        if (age == null && gender == null) {
+            return false;
+        } else if (age == null || gender == null) {
+            return age == null ? !gender.equals(courier.getGender()) : !age.equals(courier.getAge());
+        } else {
+            return !age.equals(courier.getAge()) || !gender.equals(courier.getGender());
+        }
+    }
+
     public Integer getSearchId(Courier courier) {
         if (StringUtils.isEmpty(courier.getName()) || StringUtils.isEmpty(courier.getPhoneNumber())) {
             return null;

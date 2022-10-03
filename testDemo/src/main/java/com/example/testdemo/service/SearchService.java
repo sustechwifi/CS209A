@@ -2,10 +2,13 @@ package com.example.testdemo.service;
 
 import com.alibaba.druid.sql.visitor.functions.If;
 import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSON;
 import com.example.testdemo.component.PageBean;
 import com.example.testdemo.component.RowRecord;
 import com.example.testdemo.entity.*;
 import com.example.testdemo.entity.Record;
+import com.example.testdemo.utils.RedisConstants;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -38,29 +41,52 @@ public class SearchService {
     @Resource
     RowRecordService rowRecordService;
 
+
     public PageBean<RowRecord> handleBatchSearch(String item, int type, String search, int start, int pageSize) {
         String condition = "%" + search + "%";
-        if ("item".equals(item)) {
-            return batchItemClass(type, condition, start, pageSize);
-        }
-        return new PageBean<>();
+        return getRecordsByType(type, start, pageSize);
     }
 
-    public PageBean<RowRecord> batchItemClass(int type, String condition, int start, int pageSize) {
 
-        return null;
+    private PageBean<RowRecord> getRecordsByType(int type, int start, int pageSize) {
+        List<Integer> ids = recordService.getIdsByType(type);
+        int count = 0;
+        System.out.println("record num:" + ids.size());
+        List<RowRecord> rows = new ArrayList<>();
+        for (Integer id : ids) {
+            List<Transit> transits = transitService.getTransitsByRecordId(id);
+            while (transits.size() < TRANSIT_SIZE) {
+                transits.add(null);
+            }
+            List<Handle> handles = handleService.getHandlesByRecordId(id);
+            while (handles.size() < HANDLE_SIZE) {
+                handles.add(null);
+            }
+            if (count >= (start - 1) * pageSize && rows.size() < pageSize) {
+                RowRecord rowRecord = rowRecordService.formRowRecord(recordService.getRecordById(id), transits, handles, new RowRecord());
+                if (rowRecord == null) {
+                    continue;
+                }
+                rows.add(rowRecord);
+            }
+            count++;
+        }
+        PageBean<RowRecord> res = new PageBean<>();
+        res.setRows(rows);
+        res.setTotalCount(count);
+        return res;
     }
 
     public PageBean<RowRecord> handlePreciseSearch(int type, RowRecord model, int start, int pageSize) {
         Company company = new Company(model.getCompany(), null);
         Integer companyId = companyService.getSearchId(company.getName());
         if (companyId != null && companyId == -1) {
-            return new PageBean<>(0, new ArrayList<>());
+            return new PageBean<>(0, new ArrayList<>(), "no found");
         }
         Ship ship = new Ship(model.getShip(), companyId, null);
         Integer shipId = shipService.getSearchId(ship);
         if (shipId != null && shipId == -1) {
-            return new PageBean<>(0, new ArrayList<>());
+            return new PageBean<>(0, new ArrayList<>(), "no found");
         }
 
         Container container = new Container(model.getContainerCode(), model.getContainerType(), null);
@@ -72,7 +98,7 @@ public class SearchService {
         Integer c4 = cityService.getSearchId(new City(model.getDeliveryCity(), null));
         if ((c1 != null && c1 == -1) || (c2 != null && c2 == -1)
                 || (c3 != null && c3 == -1) || (c4 != null && c4 == -1)) {
-            return new PageBean<>(0, new ArrayList<>());
+            return new PageBean<>(0, new ArrayList<>(), "no found");
         }
         Integer[] cityIds = new Integer[]{c1, c2, c3, c4};
 
@@ -83,7 +109,7 @@ public class SearchService {
         Integer cid1 = courierService.getSearchId(courier1);
         Integer cid2 = courierService.getSearchId(courier2);
         if ((cid1 != null && cid1 == -1) || (cid2 != null && cid2 == -1)) {
-            return new PageBean<>(0, new ArrayList<>());
+            return new PageBean<>(0, new ArrayList<>(), "no found");
         }
         Integer[] courierIds = new Integer[]{cid1, cid2};
         System.out.println(Arrays.toString(courierIds));
@@ -108,14 +134,19 @@ public class SearchService {
                                                 Integer companyId, Integer shipId, Integer[] cityIds, Integer[] courierIds) {
         List<Integer> ids = handleService.getRecordIdsByCourierIdAndType(courierIds[0], courierIds[1]);
         ids = recordService.flitIds(model, companyId, shipId, ids.toArray(Integer[]::new), type);
+        if (ids.isEmpty()) {
+            return new PageBean<>(0, new ArrayList<>(), "no found");
+        }
         return preciseByRecord(ids, model, start, pageSize, cityIds, courierIds);
     }
 
     private PageBean<RowRecord> preciseByTransit(int type, RowRecord model, int start, int pageSize,
                                                  Integer companyId, Integer shipId, Integer[] cityIds, Integer[] courierIds) {
         List<Integer> ids = transitService.getRecordIdByDateAndTax(model);
-        System.out.println(ids);
         ids = recordService.flitIds(model, companyId, shipId, ids.toArray(Integer[]::new), type);
+        if (ids.isEmpty()) {
+            return new PageBean<>(0, new ArrayList<>(), "no found");
+        }
         return preciseByRecord(ids, model, start, pageSize, cityIds, courierIds);
     }
 
@@ -140,8 +171,12 @@ public class SearchService {
             if (!handleService.isCorrectHandle(handles, model, courierIds)) {
                 continue;
             }
-            if (count > (start - 1) * pageSize && rows.size() < pageSize) {
-                rows.add(rowRecordService.formRowRecord(recordService.getRecordById(id), transits, handles));
+            if (count >= (start - 1) * pageSize && rows.size() < pageSize) {
+                RowRecord rowRecord = rowRecordService.formRowRecord(recordService.getRecordById(id), transits, handles, model);
+                if (rowRecord == null) {
+                    continue;
+                }
+                rows.add(rowRecord);
             }
             count++;
         }

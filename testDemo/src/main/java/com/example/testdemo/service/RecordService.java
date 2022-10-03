@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,14 +42,21 @@ public class RecordService {
         return recordMapper.getRecordById(id);
     }
 
+    public List<Integer> getIdsByType(int type) {
+        return recordMapper.getIdsByType(type);
+    }
+
     public List<Integer> flitIds(RowRecord model, Integer companyId, Integer shipId,
                                  Integer[] ids, Integer type) {
+        if (ids.length == 0) {
+            return new ArrayList<>();
+        }
         List<Record> records = recordMapper.getRecordByIds(ids);
         return records.stream().filter(r ->
                         (type == 0 || r.getState() == type)
                                 && (companyId == null || r.getCompanyId().equals(companyId))
                                 && (r.getState() != 1 && (StrUtil.isBlank(model.getContainerType())
-                                ||  containerService.getContainerById(r.getContainerId())
+                                || containerService.getContainerById(r.getContainerId())
                                 .getType().equals(model.getContainerType())))
                                 && (shipId == null || shipId.equals(r.getShipId()))
                                 && (StrUtil.isBlank(model.getItemClass()) || model.getItemClass().equals(r.getItemClass())))
