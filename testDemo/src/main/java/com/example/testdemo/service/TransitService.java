@@ -112,4 +112,8 @@ public class TransitService {
         final int count = cnt;
         return flag.keySet().stream().filter(f -> flag.get(f) == count).collect(Collectors.toList());
     }
+
+    public void deleteByRecordIds(Integer[] ids) {
+        transitMapper.deleteByRecordIds(ids);
+    }
 }

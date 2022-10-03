@@ -1,7 +1,7 @@
 <template>
   <div style="height: 50px; line-height: 50px; border-bottom: 1px solid #ccc ; background-color: lightgray;
   display: flex">
-    <div style="width: 60%;padding-left: 30px;font-weight: bold;color: darkslateblue">SUSTC 管理系统</div>
+    <div style="width: 60%;padding-left: 30px;font-weight: bold;color: darkslateblue">SUSTC DBMS</div>
     <div style="flex: 1"></div>
     <div style="width: 200px">
         <span class="el-avatar el-avatar--circle" style="height: 40px; width: 40px; line-height: 40px;">

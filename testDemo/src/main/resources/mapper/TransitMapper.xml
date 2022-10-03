@@ -11,6 +11,13 @@
         <result column="city_id" property="cityId"/>
     </resultMap>
 
+    <delete id="deleteByRecordIds">
+        delete from sustc.public.transit where transit.record_id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
 
     <select id="getTransitsByModel" resultMap="transitRM">
         select * from sustc.public.transit

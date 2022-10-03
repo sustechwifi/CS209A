@@ -21,4 +21,6 @@ public interface HandleMapper {
     List<Integer> getRecordIdsByCourierIdAndType(@Param("id") Integer id, @Param("type") Integer type);
 
     List<Handle> getHandlesByRecordId(int id);
+
+    void deleteByRecordIds(Integer[] ids);
 }

@@ -39,6 +39,7 @@ public class RowRecordService {
         Container container = containerService.formContainer(
                 containerService.getContainerById(record.getContainerId()));
         return new RowRecord(
+                record.getId(),
                 record.getItemName(),
                 record.getItemClass(),
                 record.getItemPrice(),

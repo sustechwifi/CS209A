@@ -75,4 +75,8 @@ public class HandleService {
             }
         }
     }
+
+    public void deleteByRecordIds(Integer[] ids) {
+        handleMapper.deleteByRecordIds(ids);
+    }
 }

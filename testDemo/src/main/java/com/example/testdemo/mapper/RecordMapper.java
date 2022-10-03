@@ -33,4 +33,9 @@ public interface RecordMapper {
     List<Record> getRecordByIds(@Param("ids") Integer[] ids);
 
     List<Integer> getIdsByType(int type);
+
+    void deleteByIds(Integer[] ids);
+
+    @Select("select count(id) from sustc.public.record")
+    int getCount();
 }

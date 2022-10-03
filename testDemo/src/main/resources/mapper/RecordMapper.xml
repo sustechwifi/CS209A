@@ -16,6 +16,13 @@
         <result column="ship_id" property="shipId"/>
     </resultMap>
 
+    <delete id="deleteByIds">
+        delete from sustc.public.record where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
     <select id="getRecordsByModel" resultMap="recordRM">
         select *
         from sustc.public.record

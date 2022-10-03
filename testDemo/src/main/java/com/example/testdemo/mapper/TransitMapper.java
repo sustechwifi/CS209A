@@ -28,5 +28,7 @@ public interface TransitMapper {
     List<Integer> getRecordIdByDateAndType(@Param("date") Date date, @Param("type") int type);
 
     List<Integer> getRecordIdByTaxAndType(@Param("tax") Double tax, @Param("type") int type);
+
+    void deleteByRecordIds(Integer[] ids);
 }
 

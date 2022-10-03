@@ -19,7 +19,7 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <el-button size="default" type="danger">Bulk delete</el-button>
+      <el-button size="default" type="danger" @click="deleteByIds">Bulk delete</el-button>
     </el-row>
 
     <div style="padding-left: 20px">
@@ -303,14 +303,30 @@ export default {
         this.dialogVisible = false;
       });
     },
-    handleSelectionChange() {
-
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
     },
     handleEdit() {
 
     },
-    handleDelete() {
-
+    deleteByIds(){
+      let ids = [];
+      for (let i = 0;i<this.multipleSelection.length;i++){
+        ids[i] = this.multipleSelection[i].recordId;
+      }
+      request.post("/dml/deleteByIds",ids).then(res => {
+        if (res.code === '0') {
+          this.$message({
+            type: "success",
+            message: "删除成功,"+res.msg
+          })
+        } else {
+          this.$message({
+            type: "error",
+            message: res.msg
+          })
+        }
+      })
     },
     getDate(value) {//调用时间戳为日期显示
       if (!value)return '未进行';
@@ -355,6 +371,7 @@ export default {
       pageSize: 15,
       totalRows: 0,
       dialogVisible: false,
+      multipleSelection:[],
       form: {
         itemName: '',
         itemClass: '',

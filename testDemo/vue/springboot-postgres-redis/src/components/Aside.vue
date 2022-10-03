@@ -21,6 +21,11 @@
       <span>query & DML</span>
     </el-menu-item>
 
+    <el-menu-item index="dml">
+      <el-icon><EditPen /></el-icon>
+      <span>Batch DML</span>
+    </el-menu-item>
+
     <el-menu-item index="others" disabled>
       <el-icon><document /></el-icon>
       <span>special query</span>

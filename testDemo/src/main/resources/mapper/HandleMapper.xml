@@ -11,6 +11,13 @@
         <result column="courier_id" property="courierId"/>
     </resultMap>
 
+    <delete id="deleteByRecordIds">
+        delete from sustc.public.handle where record_id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
     <select id="getHandlesByRecordId" resultMap="handleRM">
         select *
         from sustc.public.handle

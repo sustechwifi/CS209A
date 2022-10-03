@@ -17,6 +17,7 @@ import java.util.Locale;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RowRecord {
+    private Integer recordId = null;
     private String itemName = "";
     private String itemClass = "";
     private Long itemPrice = null;

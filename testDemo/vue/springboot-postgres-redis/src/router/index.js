@@ -23,6 +23,11 @@ const routes = [
         name: 'Search',
         component: () => import ("@/views/Search")
       },
+      {
+        path: 'dml',
+        name: 'DML',
+        component: () => import ("@/views/DML")
+      },
     ]
   },
   {

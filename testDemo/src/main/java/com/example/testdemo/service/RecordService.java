@@ -2,6 +2,7 @@ package com.example.testdemo.service;
 
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.druid.util.StringUtils;
+import com.example.testdemo.component.Result;
 import com.example.testdemo.component.RowRecord;
 import com.example.testdemo.entity.Record;
 import com.example.testdemo.mapper.RecordMapper;
@@ -63,4 +64,12 @@ public class RecordService {
                 .map(Record::getId).toList();
     }
 
+    public void deleteByIds(Integer[] ids) {
+        recordMapper.deleteByIds(ids);
+    }
+
+    public Result<?> getCount() {
+        int res = recordMapper.getCount();
+        return new Result<>(res);
+    }
 }
