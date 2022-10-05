@@ -12,23 +12,41 @@
         Batch query
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="item">Item Class</el-dropdown-item>
-            <el-dropdown-item command="courier">Courier name</el-dropdown-item>
+            <el-dropdown-item command="null">null</el-dropdown-item>
+            <el-dropdown-item command="itemClass">Item Class</el-dropdown-item>
             <el-dropdown-item command="ship">Ship name</el-dropdown-item>
             <el-dropdown-item command="company">Company name</el-dropdown-item>
+            <el-dropdown-item command="container">Container type</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+      <el-dropdown style="padding-right: 20px" size="default" split-button type="warning" @click="updateAll">
+        Bulk updates
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="1">update not exported</el-dropdown-item>
+            <el-dropdown-item command="2">update exported</el-dropdown-item>
+            <el-dropdown-item command="3">update not delivery</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
       <el-button size="default" type="danger" @click="deleteByIds">Bulk delete</el-button>
     </el-row>
 
-    <div style="padding-left: 20px">
-      <el-button size="default" type="primary" @click="dialogVisible = true">Precise query</el-button>
-    </div>
-
+    <el-row>
+      <el-switch
+          v-model="precise"
+          size="default"
+          active-text="use precise search"
+          style="padding-left: 20px"
+      />
+      <div style="padding-left: 20px" :hidden="!precise">
+        <el-button size="default" type="primary" @click="dialogVisible = true">Precise query</el-button>
+      </div>
+    </el-row>
     <el-row style="padding-left: 30px">
-      <el-radio-group v-model="searchType" @change="handlePreciseSearch">
-        <el-radio :label="0">All</el-radio>
+      <el-radio-group v-model="searchType" @change="this.route();">
+        <el-radio :disabled="!precise" :label="0">All</el-radio>
         <el-radio :label="1">Not exported</el-radio>
         <el-radio :label="2">Exported</el-radio>
         <el-radio :label="3">Not delivered</el-radio>
@@ -220,6 +238,7 @@
 
       <el-table-column prop="content" label="Company">
         <template v-slot="scope">
+          <el-input v-model="scope.row.ship"></el-input>
           <el-input v-model="scope.row.company"></el-input>
         </template>
       </el-table-column>
@@ -230,24 +249,24 @@
           <el-input v-model="scope.row.containerType"></el-input>
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="log time" width="200px">
+      <el-table-column prop="name" label="log time" width="150px">
         <template v-slot="scope">
           <Span>{{ getTime(scope.row.logTime) }}</Span>
         </template>
       </el-table-column>
+<!--      <el-table-column label="Operations" width="100px">-->
+<!--        <template #default="scope">-->
+<!--          <el-button @click="handleEdit(scope.$index, scope.row)">Edit</el-button>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
 
-      <el-table-column label="Operations" width="100px">
-        <template #default="scope">
-          <el-button @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
-        </template>
-      </el-table-column>
     </el-table>
     <hr>
     <div class="demo-pagination-block">
       <el-pagination
           v-model:currentPage="currentPage"
           v-model:page-size="pageSize"
-          :page-sizes="[5, 15, 25, 35]"
+          :page-sizes="[1, 5, 15, 25]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="totalRows"
           @size-change="handleSizeChange"
@@ -275,6 +294,7 @@ export default {
           pageSize: this.pageSize
         }
       }).then(res => {
+        this.rowIds = res.ids;
         this.tableData = res.rows;
         this.totalRows = res.totalCount;
         this.$message({
@@ -289,36 +309,59 @@ export default {
     },
     handlePreciseSearch() {
       console.log(this.form);
-      request.post("search/precise/" + this.searchType +
-          "/" + this.pageSize +
-          "/" + this.currentPage
-          , this.form).then(res => {
-        this.tableData = res.rows;
-        this.totalRows = res.totalCount;
-        console.log(res.rows)
-        this.$message({
-          type: "success",
-          message: "查询完毕"
+      if (this.form.recordId) {
+        request.post("/dml/update", this.form).then(res => {
+          this.$message({
+            type: "success",
+            message: "更新完毕，" + res.msg
+          })
+          this.form = [];
+          this.dialogVisible = false;
         })
-        this.dialogVisible = false;
-      });
+      } else {
+        request.post("search/precise/" + this.searchType +
+            "/" + this.pageSize +
+            "/" + this.currentPage
+            , this.form).then(res => {
+          this.tableData = res.rows;
+          this.totalRows = res.totalCount;
+          console.log(res.rows)
+          this.$message({
+            type: "success",
+            message: "查询完毕"
+          })
+          this.dialogVisible = false;
+        });
+      }
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    handleEdit() {
-
+    handleEdit(index, row) {
+      this.form = row;
+      this.form.logTime = Date.now();
+      this.dialogVisible = true;
     },
-    deleteByIds(){
+    updateAll() {
+      this.dialogVisible = true;
+    },
+    route() {
+      if (this.precise) {
+        this.handlePreciseSearch();
+      } else {
+        this.handleClick();
+      }
+    },
+    deleteByIds() {
       let ids = [];
-      for (let i = 0;i<this.multipleSelection.length;i++){
+      for (let i = 0; i < this.multipleSelection.length; i++) {
         ids[i] = this.multipleSelection[i].recordId;
       }
-      request.post("/dml/deleteByIds",ids).then(res => {
+      request.post("/dml/deleteByIds", ids).then(res => {
         if (res.code === '0') {
           this.$message({
             type: "success",
-            message: "删除成功,"+res.msg
+            message: "删除成功," + res.msg
           })
         } else {
           this.$message({
@@ -329,7 +372,7 @@ export default {
       })
     },
     getDate(value) {//调用时间戳为日期显示
-      if (!value)return '未进行';
+      if (!value) return '未进行';
       let date = new Date(value)
       let y = date.getFullYear()  //获取年份
       let m = date.getMonth() + 1  //获取月份
@@ -339,7 +382,7 @@ export default {
       return y + "-" + m + "-" + d
     },
     getTime(value) {//调用时间戳为日期显示
-      if (!value)return '';
+      if (!value) return '';
       let date = new Date(value)
       let y = date.getFullYear()  //获取年份
       let m = date.getMonth() + 1  //获取月份
@@ -355,23 +398,25 @@ export default {
       return y + "-" + m + "-" + d + " " + h + ":" + mm + ":" + s
     },
     handleSizeChange() {
-      this.handlePreciseSearch();
+      this.route();
     },
     handleCurrentChange() {
-      this.handlePreciseSearch();
-    }
+      this.route();
+    },
   },
   data() {
     return {
       search: '',
+      precise: false,
       searchContent: '',
-      searchType: 0,
+      searchType: 4,
       tableData: [],
       currentPage: 1,
       pageSize: 15,
       totalRows: 0,
       dialogVisible: false,
-      multipleSelection:[],
+      rowIds: [],
+      multipleSelection: [],
       form: {
         itemName: '',
         itemClass: '',
@@ -392,6 +437,7 @@ export default {
         exportCity: '',
         importTax: undefined,
         importCity: '',
+        logTime: '',
       },
     }
   },

@@ -20,6 +20,13 @@ public class HandleService {
         handleMapper.add(handle);
     }
 
+    public void addByBatch(List<Handle> handles){
+        if (handles.isEmpty()){
+            return;
+        }
+        handleMapper.addByBatch(handles);
+    }
+
     public void deleteAll() {
         handleMapper.deleteAll();
     }
@@ -79,4 +86,6 @@ public class HandleService {
     public void deleteByRecordIds(Integer[] ids) {
         handleMapper.deleteByRecordIds(ids);
     }
+
+
 }

@@ -9,6 +9,7 @@ import com.example.testdemo.mapper.RecordMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +25,7 @@ public class RecordService {
 
     public int add(Record record) {
         recordMapper.add(record);
-        return recordMapper.getId(record);
+        return recordMapper.getIdByItemName(record.getItemName());
     }
 
     public void deleteAll() {
@@ -71,5 +72,23 @@ public class RecordService {
     public Result<?> getCount() {
         int res = recordMapper.getCount();
         return new Result<>(res);
+    }
+
+    public List<Integer> getIdsByCondition(String item, String condition, int type) {
+        if ("container".equals(item)) {
+            return recordMapper.getIdsByContainer(condition, type);
+        } else if ("itemClass".equals(item)) {
+            return recordMapper.getIdsByItemClass(condition, type);
+        } else if ("ship".equals(item)) {
+            return recordMapper.getIdsByShip(condition, type);
+        } else if ("company".equals(item)) {
+            return recordMapper.getIdsByCompany(condition, type);
+        } else {
+            return recordMapper.getIdsByType(type);
+        }
+    }
+
+    public void updateByModel(RowRecord rowRecord,int type) {
+       recordMapper.updateByModel(rowRecord,type);
     }
 }

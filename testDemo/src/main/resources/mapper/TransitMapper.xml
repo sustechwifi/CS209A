@@ -11,6 +11,23 @@
         <result column="city_id" property="cityId"/>
     </resultMap>
 
+    <insert id="addBatch" parameterType="list">
+        <foreach collection="list" item="item" open="" close="" index="index" separator=";">
+            insert into sustc.public.transit (type, time, tax, city_id, record_id)
+            VALUES
+            (
+            #{item.type},
+            #{item.time},
+            #{item.tax},
+            #{item.cityId},
+            #{item.recordId}
+            )
+            on conflict do nothing
+        </foreach>
+
+    </insert>
+
+
     <delete id="deleteByRecordIds">
         delete from sustc.public.transit where transit.record_id in
         <foreach collection="ids" item="id" separator="," open="(" close=")">
@@ -51,5 +68,20 @@
         select record_id from sustc.public.transit where type = #{type} and tax = #{tax};
     </select>
 
+    <resultMap id="infoSum" type="java.util.HashMap">
+        <result column="info" property="key" javaType="java.lang.String"/>
+        <result column="sum" property="value" javaType="java.lang.Double"/>
+    </resultMap>
 
+    <select id="getResult3" resultMap="infoSum">
+        select c.name, sum(t.tax) as cost
+        from sustc.public.transit t
+                 join sustc.public.city c on t.city_id = c.id
+        where t.type = 2
+          and t.record_id in
+              (select r.id from sustc.public.record r
+               where r.item_class in (select g.item_class from sustc.public.record g order by random() limit 30))
+        group by c.name
+        order by cost limit 1;
+    </select>
 </mapper>

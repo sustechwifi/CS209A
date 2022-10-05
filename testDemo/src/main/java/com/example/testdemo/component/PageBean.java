@@ -16,6 +16,8 @@ public class PageBean<T> {
 
     private List<T> rows;
 
+    private List<Integer> ids;
+
     private String msg;
 
 

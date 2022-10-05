@@ -1,9 +1,11 @@
 package com.example.testdemo.service;
 
+import com.alibaba.druid.sql.ast.SQLPartitionSpec;
 import com.alibaba.druid.sql.visitor.functions.If;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.example.testdemo.component.PageBean;
+import com.example.testdemo.component.Result;
 import com.example.testdemo.component.RowRecord;
 import com.example.testdemo.entity.*;
 import com.example.testdemo.entity.Record;
@@ -15,6 +17,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.testdemo.service.HandleService.HANDLE_SIZE;
 import static com.example.testdemo.service.TransitService.TRANSIT_SIZE;
@@ -42,14 +45,16 @@ public class SearchService {
     RowRecordService rowRecordService;
 
 
+
     public PageBean<RowRecord> handleBatchSearch(String item, int type, String search, int start, int pageSize) {
         String condition = "%" + search + "%";
-        return getRecordsByType(type, start, pageSize);
+        System.out.println("item = " + item);
+        return getRecordsByType(item, condition, type, start, pageSize);
     }
 
 
-    private PageBean<RowRecord> getRecordsByType(int type, int start, int pageSize) {
-        List<Integer> ids = recordService.getIdsByType(type);
+    private PageBean<RowRecord> getRecordsByType(String item, String condition, int type, int start, int pageSize) {
+        List<Integer> ids = recordService.getIdsByCondition(item, condition, type);
         int count = 0;
         System.out.println("record num:" + ids.size());
         List<RowRecord> rows = new ArrayList<>();
@@ -72,6 +77,7 @@ public class SearchService {
             count++;
         }
         PageBean<RowRecord> res = new PageBean<>();
+        res.setIds(ids);
         res.setRows(rows);
         res.setTotalCount(count);
         return res;
@@ -81,12 +87,12 @@ public class SearchService {
         Company company = new Company(model.getCompany(), null);
         Integer companyId = companyService.getSearchId(company.getName());
         if (companyId != null && companyId == -1) {
-            return new PageBean<>(0, new ArrayList<>(), "no found");
+            return new PageBean<>(0, new ArrayList<>(), null, "no found");
         }
         Ship ship = new Ship(model.getShip(), companyId, null);
         Integer shipId = shipService.getSearchId(ship);
         if (shipId != null && shipId == -1) {
-            return new PageBean<>(0, new ArrayList<>(), "no found");
+            return new PageBean<>(0, new ArrayList<>(), null, "no found");
         }
 
         Container container = new Container(model.getContainerCode(), model.getContainerType(), null);
@@ -98,7 +104,7 @@ public class SearchService {
         Integer c4 = cityService.getSearchId(new City(model.getDeliveryCity(), null));
         if ((c1 != null && c1 == -1) || (c2 != null && c2 == -1)
                 || (c3 != null && c3 == -1) || (c4 != null && c4 == -1)) {
-            return new PageBean<>(0, new ArrayList<>(), "no found");
+            return new PageBean<>(0, new ArrayList<>(), null, "no found");
         }
         Integer[] cityIds = new Integer[]{c1, c2, c3, c4};
 
@@ -109,7 +115,7 @@ public class SearchService {
         Integer cid1 = courierService.getSearchId(courier1);
         Integer cid2 = courierService.getSearchId(courier2);
         if ((cid1 != null && cid1 == -1) || (cid2 != null && cid2 == -1)) {
-            return new PageBean<>(0, new ArrayList<>(), "no found");
+            return new PageBean<>(0, new ArrayList<>(), null, "no found");
         }
         Integer[] courierIds = new Integer[]{cid1, cid2};
         System.out.println(Arrays.toString(courierIds));
@@ -135,7 +141,7 @@ public class SearchService {
         List<Integer> ids = handleService.getRecordIdsByCourierIdAndType(courierIds[0], courierIds[1]);
         ids = recordService.flitIds(model, companyId, shipId, ids.toArray(Integer[]::new), type);
         if (ids.isEmpty()) {
-            return new PageBean<>(0, new ArrayList<>(), "no found");
+            return new PageBean<>(0, new ArrayList<>(), null, "no found");
         }
         return preciseByRecord(ids, model, start, pageSize, cityIds, courierIds);
     }
@@ -145,7 +151,7 @@ public class SearchService {
         List<Integer> ids = transitService.getRecordIdByDateAndTax(model);
         ids = recordService.flitIds(model, companyId, shipId, ids.toArray(Integer[]::new), type);
         if (ids.isEmpty()) {
-            return new PageBean<>(0, new ArrayList<>(), "no found");
+            return new PageBean<>(0, new ArrayList<>(), null, "no found");
         }
         return preciseByRecord(ids, model, start, pageSize, cityIds, courierIds);
     }
@@ -183,6 +189,39 @@ public class SearchService {
         PageBean<RowRecord> res = new PageBean<>();
         res.setRows(rows);
         res.setTotalCount(count);
+        return res;
+    }
+
+    public Result<Map<String, Integer>> getContainerAdvance(Container container) {
+        long a = System.currentTimeMillis();
+        Map<String, Integer> time = containerService.getOldestContainer(container.getType());
+        Result<Map<String, Integer>> res = new Result<>();
+        res.setData(time);
+        res.setMsg("用时：" + (System.currentTimeMillis() - a) + "ms");
+        return res;
+    }
+
+    public Result<Map<String, Integer>> getGreatestCourier(String city, String company) {
+        long a = System.currentTimeMillis();
+        Map<String, Integer> data = courierService.getGreatestCourier(city, company);
+        Result<Map<String, Integer>> res = new Result<>();
+        res.setData(data);
+        System.out.println(data.toString());
+        res.setMsg("用时：" + (System.currentTimeMillis() - a) + "ms");
+        return res;
+    }
+
+    public Result<String> getResult3ByList(String[] companies) {
+        return null;
+    }
+
+    public Result<Map<String, Double>> getResult3() {
+        long a = System.currentTimeMillis();
+        Map<String, Double> data = transitService.getResult3();
+        Result<Map<String, Double>> res = new Result<>();
+        res.setData(data);
+        System.out.println(data.toString());
+        res.setMsg("用时：" + (System.currentTimeMillis() - a) + "ms");
         return res;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -20,8 +21,12 @@ public class CourierService {
     StringRedisTemplate idRedisTemplate;
 
     public int add(Courier courier) {
+        Integer t = getId(courier);
+        if (t != null) {
+            return t;
+        }
         courierMapper.add(courier);
-        return courierMapper.getId(courier);
+        return getId(courier);
     }
 
     public Integer getId(Courier courier) {
@@ -75,4 +80,7 @@ public class CourierService {
         return Objects.requireNonNullElseGet(courier, Courier::new);
     }
 
+    public Map<String,Integer> getGreatestCourier(String city, String company) {
+        return courierMapper.getGreatestCourier(city, company);
+    }
 }

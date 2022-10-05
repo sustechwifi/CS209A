@@ -26,7 +26,7 @@ public class DataInsertService {
     private static final String DELIMITER = ",";
     private static final long M = 1024L * 1024;
     private static final int DEFAULT_THREAD_NUM = 10;
-    private static final int DEFAULT_THREAD_CAPACITY = 50000;
+    private static final int DEFAULT_THREAD_CAPACITY = 20000;
 
     @Resource
     CompanyService companyService;
@@ -95,6 +95,7 @@ public class DataInsertService {
         }
     }
 
+
     public void insertByString(String line) throws ParseException {
         String[] columns = line.split(DELIMITER);
         int[] ids = insertCommon(columns);
@@ -109,10 +110,9 @@ public class DataInsertService {
         }
     }
 
+
     /**
      * 插入共有的列
-     *
-     * @throws ParseException 空行异常
      */
     public int[] insertCommon(String[] columns) {
         final int companyId = companyService.add(columns[24]);
@@ -187,13 +187,16 @@ public class DataInsertService {
         final int c2 = courierService.add(courier2);
         final int recordId = recordService.add(new Record(new Timestamp(new SimpleDateFormat("yyyy/MM/dd hh:mm").parse(columns[25]).getTime()),
                 columns[0], columns[1], Long.parseLong(columns[2]), ids[3], containerId, shipId, null,4));
-        handleService.add(new Handle(1, new SimpleDateFormat("yyyy/MM/dd").parse(columns[4]), recordId, ids[2], null));
-        handleService.add(new Handle(4, new SimpleDateFormat("yyyy/MM/dd").parse(columns[9]), recordId, c2, null));
-        transitService.add(new Transit(1, new SimpleDateFormat("yyyy/MM/dd").parse(columns[4]), null, ids[0], recordId, null));
-        transitService.add(new Transit(2, new SimpleDateFormat("yyyy/MM/dd").parse(columns[17]), Double.parseDouble(columns[16]), ids[1], recordId, null));
-        transitService.add(new Transit(3, new SimpleDateFormat("yyyy/MM/dd").parse(columns[20]), Double.parseDouble(columns[19]), cityIn, recordId, null));
-        transitService.add(new Transit(4, new SimpleDateFormat("yyyy/MM/dd").parse(columns[9]), null, city2Id, recordId, null));
-
+        List<Handle> handles = new ArrayList<>();
+        List<Transit> transits = new ArrayList<>();
+        handles.add(new Handle(1, new SimpleDateFormat("yyyy/MM/dd").parse(columns[4]), recordId, ids[2], null));
+        handles.add(new Handle(4, new SimpleDateFormat("yyyy/MM/dd").parse(columns[9]), recordId, c2, null));
+        transits.add(new Transit(1, new SimpleDateFormat("yyyy/MM/dd").parse(columns[4]), null, ids[0], recordId, null));
+        transits.add(new Transit(2, new SimpleDateFormat("yyyy/MM/dd").parse(columns[17]), Double.parseDouble(columns[16]), ids[1], recordId, null));
+        transits.add(new Transit(3, new SimpleDateFormat("yyyy/MM/dd").parse(columns[20]), Double.parseDouble(columns[19]), cityIn, recordId, null));
+        transits.add(new Transit(4, new SimpleDateFormat("yyyy/MM/dd").parse(columns[9]), null, city2Id, recordId, null));
+        handleService.addByBatch(handles);
+        transitService.addBatch(transits);
     }
 
 
@@ -208,7 +211,7 @@ public class DataInsertService {
                 return Result.error("103", "csv 文件格式不正确！");
             }
             long length = new File(path).length();
-            System.out.println("文件大小为" + length + "b,约合" + (length / M) + "mb");
+            System.out.println("local文件大小为" + length + "b,约合" + (length / M) + "mb");
             List<String> list = new ArrayList<>(DEFAULT_THREAD_CAPACITY);
             List<MyThread> threads = new ArrayList<>();
             int cnt = 0;
@@ -221,8 +224,12 @@ public class DataInsertService {
                     threads.add(thread);
                 }
             }
-            for (MyThread thread : threads) {
-                thread.join();
+            MyThread thread = new MyThread(new ArrayList<>(list), this, ++cnt);
+            thread.start();
+            list.clear();
+            threads.add(thread);
+            for (MyThread thread_ : threads) {
+                thread_.join();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -234,7 +241,7 @@ public class DataInsertService {
         return Result.success("操作用时: " + (end - begin) + "ms");
     }
 
-    @Transactional
+
     public Result<?> deleteAll() {
         long start = System.currentTimeMillis();
         transitService.deleteAll();
@@ -249,6 +256,50 @@ public class DataInsertService {
         return Result.success("用时：" + (end - start) + "ms");
     }
 
+    public Result<?> insertByRange(String insertPath, int lineStart, int lineEnd) {
+        long begin = System.currentTimeMillis();
+        String line = "";
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(insertPath), Charset.forName("GBK"))) {
+            line = br.readLine();
+            if (!line.equals(FORMAT)) {
+                System.out.println("csv 文件格式不正确！");
+                return Result.error("103", "csv 文件格式不正确！");
+            }
+            long length = new File(insertPath).length();
+            System.out.println("local文件大小为" + length + "b,约合" + (length / M) + "mb");
+            List<String> list = new ArrayList<>(DEFAULT_THREAD_CAPACITY);
+            List<MyThread> threads = new ArrayList<>();
+            int cnt = 0;
+            int lineNum = 0;
+            while ((line = br.readLine()) != null) {
+                lineNum++;
+                if (lineNum < lineStart || lineNum > lineEnd) {
+                    continue;
+                }
+                list.add(line);
+                if (list.size() == DEFAULT_THREAD_CAPACITY) {
+                    MyThread thread = new MyThread(new ArrayList<>(list), this, ++cnt);
+                    thread.start();
+                    list.clear();
+                    threads.add(thread);
+                }
+            }
+            MyThread thread = new MyThread(new ArrayList<>(list), this, ++cnt);
+            thread.start();
+            list.clear();
+            threads.add(thread);
+            for (MyThread thread_ : threads) {
+                thread_.join();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(line);
+            return Result.error("203", e.getMessage());
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("操作用时: " + (end - begin) + "ms");
+        return Result.success("操作用时: " + (end - begin) + "ms");
+    }
 }
 
 class MyThread extends Thread {

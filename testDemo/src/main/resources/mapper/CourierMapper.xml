@@ -45,21 +45,34 @@
             <if test="courier.phoneNumber != null and courier.phoneNumber != ''">
                 and phone_number = #{courier.phoneNumber}
             </if>
-            <if test="courier.companyId != null">
-                and company_id = #{courier.companyId}
-            </if>
-            <if test="courier.cityId != null">
-                and cityId = #{courier.cityId}
-            </if>
-            <if test="courier.gender != null">
-                and gender = #{courier.gender}
-            </if>
-
         </where>
     </select>
 
     <select id="selectById" resultMap="courierRM">
         select * from sustc.public.courier where id = #{id}
+    </select>
+
+    <resultMap id="infoCount" type="java.util.HashMap">
+        <result column="info" property="key" javaType="java.lang.String"/>
+        <result column="count" property="value" javaType="java.lang.Integer"/>
+    </resultMap>
+
+
+    <select id="getGreatestCourier" resultMap="infoCount">
+        select concat(name, ':', phone_number),
+               max(
+                       (select count(*)
+                        from sustc.public.handle h
+                                 join sustc.public.transit t on h.record_id = t.record_id and (t.type = 1 or t.type = 4)
+                        where h.courier_id = c.id
+                          and t.city_id = (select g.id from sustc.public.city g where g.name = #{city}))
+                   )
+                   as num
+        from sustc.public.courier c
+        where c.company_id = (select d.id from sustc.public.company d where d.name = #{company})
+        group by name, phone_number
+        order by num desc
+        limit 1;
     </select>
 
 

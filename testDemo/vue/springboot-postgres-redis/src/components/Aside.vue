@@ -26,7 +26,7 @@
       <span>Batch DML</span>
     </el-menu-item>
 
-    <el-menu-item index="others" disabled>
+    <el-menu-item index="advance">
       <el-icon><document /></el-icon>
       <span>special query</span>
     </el-menu-item>

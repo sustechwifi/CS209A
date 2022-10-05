@@ -11,6 +11,19 @@
         <result column="courier_id" property="courierId"/>
     </resultMap>
 
+    <insert id="addByBatch" parameterType="list">
+        <foreach collection="list" item="item" open="" close="" index="index" separator=";">
+            insert into sustc.public.handle (type, time, record_id, courier_id) VALUES
+            (
+            #{item.type},
+            #{item.time},
+            #{item.recordId},
+            #{item.courierId}
+            )
+            on conflict do nothing
+        </foreach>
+    </insert>
+
     <delete id="deleteByRecordIds">
         delete from sustc.public.handle where record_id in
         <foreach collection="ids" item="id" separator="," open="(" close=")">
@@ -25,7 +38,10 @@
     </select>
 
     <select id="getRecordIdsByCourierIdAndType" resultType="java.lang.Integer">
-        select record_id from sustc.public.handle where courier_id = #{id} and type = #{type};
+        select record_id
+        from sustc.public.handle
+        where courier_id = #{id}
+          and type = #{type};
     </select>
 
 

@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.Map;
+
 public interface CourierMapper {
 
     @Insert("insert into sustc.public.courier (phone_number, name, age, gender, company_id, city_id) " +
@@ -22,4 +24,6 @@ public interface CourierMapper {
     Courier selectById(int id);
 
     Courier getCourier(@Param("courier") Courier courier);
+
+    Map<String, Integer> getGreatestCourier(@Param("city") String city, @Param("company") String company);
 }

@@ -23,8 +23,13 @@ public class CityService {
     StringRedisTemplate idRedisTemplate;
 
     public int add(City city) {
-        cityMapper.add(city);
-        return cityMapper.getId(city.getName());
+        Integer res = getId(city);
+        if (res != null) {
+            return res;
+        } else {
+            cityMapper.add(city);
+            return getId(city);
+        }
     }
 
     public Integer getId(City city) {

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface TransitMapper {
@@ -30,5 +31,10 @@ public interface TransitMapper {
     List<Integer> getRecordIdByTaxAndType(@Param("tax") Double tax, @Param("type") int type);
 
     void deleteByRecordIds(Integer[] ids);
+
+    void addBatch(List<Transit> list);
+
+
+    Map<String, Double> getResult3();
 }
 

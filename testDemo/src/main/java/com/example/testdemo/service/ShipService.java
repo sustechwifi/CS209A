@@ -24,8 +24,12 @@ public class ShipService {
     StringRedisTemplate idRedisTemplate;
 
     public int add(Ship ship) {
+        Integer t = getId(ship);
+        if (t != null) {
+            return t;
+        }
         shipMapper.add(ship);
-        return shipMapper.getId(ship);
+        return getId(ship);
     }
 
 

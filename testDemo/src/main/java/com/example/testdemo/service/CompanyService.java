@@ -24,8 +24,13 @@ public class CompanyService {
     StringRedisTemplate idRedisTemplate;
 
     public int add(String name) {
-        companyMapper.addCompany(name);
-        return companyMapper.getId(name);
+        Integer t = getId(name);
+        if (t != null) {
+            return t;
+        } else {
+            companyMapper.addCompany(name);
+            return getId(name);
+        }
     }
 
 

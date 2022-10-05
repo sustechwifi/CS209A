@@ -1,15 +1,14 @@
 package com.example.testdemo.service;
 
 import com.example.testdemo.component.RowRecord;
+import com.example.testdemo.entity.City;
+import com.example.testdemo.entity.Handle;
 import com.example.testdemo.entity.Transit;
 import com.example.testdemo.mapper.TransitMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,12 +16,22 @@ public class TransitService {
     @Resource
     TransitMapper transitMapper;
 
+    @Resource
+    CityService cityService;
+
     public static final int TRANSIT_SIZE = 4;
 
     public static final int DECIMAL = 1000000;
 
     public void add(Transit transit) {
         transitMapper.add(transit);
+    }
+
+    public void addBatch(List<Transit> transits) {
+        if (transits.isEmpty()) {
+            return;
+        }
+        transitMapper.addBatch(transits);
     }
 
     public void deleteAll() {
@@ -115,5 +124,10 @@ public class TransitService {
 
     public void deleteByRecordIds(Integer[] ids) {
         transitMapper.deleteByRecordIds(ids);
+    }
+
+
+    public Map<String, Double> getResult3() {
+        return transitMapper.getResult3();
     }
 }

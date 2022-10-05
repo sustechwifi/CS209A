@@ -8,9 +8,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -22,8 +20,12 @@ public class ContainerService {
     StringRedisTemplate idRedisTemplate;
 
     public int add(Container container) {
+        Integer t = getId(container);
+        if (t != null) {
+            return t;
+        }
         containerMapper.add(container);
-        return containerMapper.getId(container);
+        return getId(container);
     }
 
     public Integer getId(Container container) {
@@ -73,5 +75,12 @@ public class ContainerService {
 
     public void deleteAll() {
         containerMapper.deleteAll();
+    }
+
+    public Map<String, Integer> getOldestContainer(String type) {
+        int res = containerMapper.getOldestContainer(type);
+        Map<String, Integer> hashMap = new HashMap<>();
+        hashMap.put(type, res);
+        return hashMap;
     }
 }

@@ -16,6 +16,18 @@
         <result column="ship_id" property="shipId"/>
     </resultMap>
 
+    <update id="updateByModel">
+        update sustc.public.record
+        set log_time  = #{r.logTime},
+            item_name = #{r.itemName},
+            item_class = #{r.itemClass},
+            item_price = #{r.itemPrice},
+            ship_id = (select s.id from sustc.public.ship s where s.name = #{r.ship}),
+            company_id = (select c.id from sustc.public.company c where c.name = #{r.company}),
+            container_id = (select c.id from sustc.public.container c where c.code = #{r.containerCode}),
+            state = #{type+1} where state != 4 and id = #{r.recordId}
+    </update>
+
     <delete id="deleteByIds">
         delete from sustc.public.record where id in
         <foreach collection="ids" item="id" separator="," open="(" close=")">
@@ -69,7 +81,40 @@
     </select>
 
     <select id="getIdsByType" resultType="java.lang.Integer">
-        select id from sustc.public.record where state = #{type}
+        select id
+        from sustc.public.record
+        where state = #{type}
+    </select>
+
+    <select id="getIdsByShip" resultType="java.lang.Integer">
+        select id
+        from sustc.public.record
+        where state = #{type}
+          and ship_id in
+              (select s.id from sustc.public.ship s where s.name like #{condition})
+    </select>
+
+    <select id="getIdsByContainer" resultType="java.lang.Integer">
+        select id
+        from sustc.public.record
+        where state = #{type}
+          and container_id in
+              (select c.id from sustc.public.container c where c.type like #{condition})
+    </select>
+
+    <select id="getIdsByItemClass" resultType="java.lang.Integer">
+        select id
+        from sustc.public.record
+        where state = #{type}
+          and item_class like #{condition}
+    </select>
+
+    <select id="getIdsByCompany" resultType="java.lang.Integer">
+        select id
+        from sustc.public.record
+        where state = #{type}
+          and company_id
+            in (select c.id from sustc.public.company c where c.name like #{condition});
     </select>
 
 

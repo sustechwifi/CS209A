@@ -23,4 +23,6 @@ public interface HandleMapper {
     List<Handle> getHandlesByRecordId(int id);
 
     void deleteByRecordIds(Integer[] ids);
+
+    void addByBatch(List<Handle> list);
 }
