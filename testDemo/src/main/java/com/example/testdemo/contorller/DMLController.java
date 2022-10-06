@@ -46,6 +46,7 @@ public class DMLController {
     @PostMapping("/updateBatch/{type}")
     public Result<?> updateBatch(@RequestBody RowRecord record, @PathVariable("type") int type) {
         System.out.println(record);
+        record.setRecordId(45498);
         if (type == 0) {
             return Result.error("505", "请选择检索类型");
         }

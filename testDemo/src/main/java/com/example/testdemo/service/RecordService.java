@@ -88,7 +88,31 @@ public class RecordService {
         }
     }
 
-    public void updateByModel(RowRecord rowRecord,int type) {
-       recordMapper.updateByModel(rowRecord,type);
+    public void updateByModel(RowRecord rowRecord, int type) {
+        recordMapper.updateByModel(rowRecord, type);
+    }
+
+    public void updateToExported(int id, int shipId, int containerId) {
+        recordMapper.updateToExported(id, shipId, containerId);
+    }
+
+    public void updateToUnDelivery(Integer recordId) {
+        recordMapper.updateToUnDelivery(recordId);
+    }
+
+    public void updateToFinished(Integer recordId) {
+        recordMapper.updateToFinished(recordId);
+    }
+
+    public List<Integer> getAllUnExported() {
+        return recordMapper.getAllUnExported();
+    }
+
+    public List<Integer> getAllExported() {
+        return recordMapper.getAllExported();
+    }
+
+    public List<Integer> getAllUnFinished() {
+        return recordMapper.getAllUnFinished();
     }
 }

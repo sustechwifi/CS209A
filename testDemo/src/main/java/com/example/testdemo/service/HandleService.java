@@ -20,8 +20,8 @@ public class HandleService {
         handleMapper.add(handle);
     }
 
-    public void addByBatch(List<Handle> handles){
-        if (handles.isEmpty()){
+    public void addByBatch(List<Handle> handles) {
+        if (handles.isEmpty()) {
             return;
         }
         handleMapper.addByBatch(handles);
@@ -61,8 +61,8 @@ public class HandleService {
         models.add(new Handle(4, model.getDeliveryDate(), null, couriers[1], null));
         for (int i = 0; i < HANDLE_SIZE; i++) {
             if (!judgeHandle(handles.get(i), models.get(i))) {
-                //System.out.println(handles.get(i));
-                //System.out.println(models.get(i));
+                System.out.println(handles.get(i));
+                System.out.println(models.get(i));
                 return false;
             }
         }
@@ -88,4 +88,7 @@ public class HandleService {
     }
 
 
+    public void update(Handle h) {
+        handleMapper.update(h);
+    }
 }

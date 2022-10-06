@@ -2,10 +2,7 @@ package com.example.testdemo.mapper;
 
 import com.example.testdemo.component.RowRecord;
 import com.example.testdemo.entity.Record;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -52,4 +49,19 @@ public interface RecordMapper {
     List<Integer> getIdsByCompany(String condition, int type);
 
     void updateByModel(@Param("r") RowRecord r,@Param("type") int type);
+
+    void updateToExported(@Param("id") int id, @Param("shipId") int shipId,
+                          @Param("containerId") int containerId);
+
+    @Update("update sustc.public.record set state = 3 where id = #{id}")
+    void updateToUnDelivery(Integer id);
+
+    @Update("update sustc.public.record set state = 4 where id = #{id}")
+    void updateToFinished(Integer id);
+
+    List<Integer> getAllUnFinished();
+
+    List<Integer> getAllUnExported();
+
+    List<Integer> getAllExported();
 }

@@ -47,7 +47,6 @@ public class SearchController {
             stringRedisTemplate.opsForValue().set(key, s);
             stringRedisTemplate.expire(key, 300, TimeUnit.SECONDS);
         }
-        System.out.println(s);
         try {
             response.getOutputStream().write(s.getBytes());
             response.getOutputStream().close();

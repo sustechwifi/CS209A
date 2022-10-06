@@ -60,13 +60,7 @@ public class SearchService {
         List<RowRecord> rows = new ArrayList<>();
         for (Integer id : ids) {
             List<Transit> transits = transitService.getTransitsByRecordId(id);
-            while (transits.size() < TRANSIT_SIZE) {
-                transits.add(null);
-            }
             List<Handle> handles = handleService.getHandlesByRecordId(id);
-            while (handles.size() < HANDLE_SIZE) {
-                handles.add(null);
-            }
             if (count >= (start - 1) * pageSize && rows.size() < pageSize) {
                 RowRecord rowRecord = rowRecordService.formRowRecord(recordService.getRecordById(id), transits, handles, new RowRecord());
                 if (rowRecord == null) {
@@ -164,16 +158,10 @@ public class SearchService {
         List<RowRecord> rows = new ArrayList<>();
         for (Integer id : ids) {
             List<Transit> transits = transitService.getTransitsByRecordId(id);
-            while (transits.size() < TRANSIT_SIZE) {
-                transits.add(null);
-            }
             if (!transitService.isCorrectTransits(transits, model, cityIds)) {
                 continue;
             }
             List<Handle> handles = handleService.getHandlesByRecordId(id);
-            while (handles.size() < HANDLE_SIZE) {
-                handles.add(null);
-            }
             if (!handleService.isCorrectHandle(handles, model, courierIds)) {
                 continue;
             }
@@ -206,8 +194,7 @@ public class SearchService {
         Map<String, Integer> data = courierService.getGreatestCourier(city, company);
         Result<Map<String, Integer>> res = new Result<>();
         res.setData(data);
-        System.out.println(data.toString());
-        res.setMsg("用时：" + (System.currentTimeMillis() - a) + "ms");
+        res.setMsg("success");
         return res;
     }
 

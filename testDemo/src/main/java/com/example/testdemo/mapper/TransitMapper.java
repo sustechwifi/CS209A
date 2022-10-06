@@ -4,6 +4,7 @@ import com.example.testdemo.entity.Transit;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -16,6 +17,10 @@ public interface TransitMapper {
     @Insert("insert into sustc.public.transit (type, time, tax, city_id, record_id) VALUES " +
             "(#{type},#{time},#{tax},#{cityId},#{recordId}) on conflict do nothing ")
     void add(Transit transit);
+
+    @Update("update sustc.public.transit set time = #{time},city_id = #{cityId},tax = #{tax} " +
+            "where record_id = #{recordId} and type = #{type}")
+    void update(Transit transit);
 
     @Delete("delete from sustc.public.transit")
     void deleteAll();

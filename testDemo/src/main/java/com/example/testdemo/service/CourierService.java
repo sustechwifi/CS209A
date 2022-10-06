@@ -72,7 +72,10 @@ public class CourierService {
         return courierMapper.getCourier(courier);
     }
 
-    public Courier getCourierById(int id) {
+    public Courier getCourierById(Integer id) {
+        if (id == null) {
+            return null;
+        }
         return courierMapper.selectById(id);
     }
 
@@ -80,7 +83,7 @@ public class CourierService {
         return Objects.requireNonNullElseGet(courier, Courier::new);
     }
 
-    public Map<String,Integer> getGreatestCourier(String city, String company) {
+    public Map<String, Integer> getGreatestCourier(String city, String company) {
         return courierMapper.getGreatestCourier(city, company);
     }
 }

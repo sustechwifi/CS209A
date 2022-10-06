@@ -24,14 +24,12 @@ public class RowRecordService {
 
 
     public RowRecord formRowRecord(Record record, List<Transit> transits, List<Handle> handles, RowRecord model) {
-        Courier c1 = courierService.formCourier(
-                courierService.getCourierById(handles.get(0).getCourierId()));
+        Courier c1 = courierService.formCourier(courierService.getCourierById(handles.get(0).getCourierId()));
         if (courierService.checkAgeAndGender(c1, model.getRetrievalCourierAge(),
                 model.getRetrievalCourierGender())) {
             return null;
         }
-        Courier c2 = courierService.formCourier(
-                handles.get(1) == null ? null : courierService.getCourierById(handles.get(1).getCourierId()));
+        Courier c2 = courierService.formCourier(courierService.getCourierById(handles.get(1).getCourierId()));
         if (courierService.checkAgeAndGender(c2, model.getDeliveryCourierAge(),
                 model.getDeliveryCourierGender())) {
             return null;

@@ -130,4 +130,8 @@ public class TransitService {
     public Map<String, Double> getResult3() {
         return transitMapper.getResult3();
     }
+
+    public void update(Transit transit) {
+        transitMapper.update(transit);
+    }
 }

@@ -66,7 +66,6 @@ public class AdvanceController {
             stringRedisTemplate.opsForValue().set(key, s);
             stringRedisTemplate.expire(key, RedisConstants.INSERT_TTL, TimeUnit.SECONDS);
         }
-        System.out.println(s);
         try {
             response.getOutputStream().write(s.getBytes());
             response.getOutputStream().close();

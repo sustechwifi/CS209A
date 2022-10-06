@@ -18,15 +18,25 @@
 
     <update id="updateByModel">
         update sustc.public.record
-        set log_time  = #{r.logTime},
-            item_name = #{r.itemName},
-            item_class = #{r.itemClass},
-            item_price = #{r.itemPrice},
-            ship_id = (select s.id from sustc.public.ship s where s.name = #{r.ship}),
-            company_id = (select c.id from sustc.public.company c where c.name = #{r.company}),
+        set log_time     = #{r.logTime},
+            item_name    = #{r.itemName},
+            item_class   = #{r.itemClass},
+            item_price   = #{r.itemPrice},
+            ship_id      = (select s.id from sustc.public.ship s where s.name = #{r.ship}),
+            company_id   = (select c.id from sustc.public.company c where c.name = #{r.company}),
             container_id = (select c.id from sustc.public.container c where c.code = #{r.containerCode}),
-            state = #{type+1} where state != 4 and id = #{r.recordId}
+            state        = #{type+1}
+        where state != 4
+          and id = #{r.recordId}
     </update>
+    <update id="updateToExported">
+        update sustc.public.record
+        set container_id = #{containerId},
+            ship_id      = #{shipId},
+            state        = 2
+        where id = #{id};
+    </update>
+
 
     <delete id="deleteByIds">
         delete from sustc.public.record where id in
@@ -115,6 +125,16 @@
         where state = #{type}
           and company_id
             in (select c.id from sustc.public.company c where c.name like #{condition});
+    </select>
+    <select id="getAllUnFinished" resultType="java.lang.Integer">
+        select id from sustc.public.record where state = 3;
+    </select>
+
+    <select id="getAllUnExported" resultType="java.lang.Integer">
+        select id from sustc.public.record where state = 1;
+    </select>
+    <select id="getAllExported" resultType="java.lang.Integer">
+        select id from sustc.public.record where state = 2;
     </select>
 
 

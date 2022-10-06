@@ -104,5 +104,6 @@ create table transit(
 );--连接record和city，设置了不限于4种的关系类型，根据事件类型的不同使用不同的字段
 --尽管由此可能造成数据冗余，但是可以统一record和city之间的联系
 --考虑这之间的关系，采用(type,city_id,record_id)的多元约束
+create index handle_courier_id on handle(courier_id);
 create index handle_record_id on handle(record_id);
 create index transit_record_id on transit(record_id);

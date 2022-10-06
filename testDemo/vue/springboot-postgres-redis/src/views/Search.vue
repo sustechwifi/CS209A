@@ -20,7 +20,8 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <el-dropdown style="padding-right: 20px" size="default" split-button type="warning" @click="updateAll">
+      <el-dropdown style="padding-right: 20px" size="default" split-button type="warning" @click="updateAll"
+                   @command="handleUpdateType">
         Bulk updates
         <template #dropdown>
           <el-dropdown-menu>
@@ -254,11 +255,11 @@
           <Span>{{ getTime(scope.row.logTime) }}</Span>
         </template>
       </el-table-column>
-<!--      <el-table-column label="Operations" width="100px">-->
-<!--        <template #default="scope">-->
-<!--          <el-button @click="handleEdit(scope.$index, scope.row)">Edit</el-button>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <!--      <el-table-column label="Operations" width="100px">-->
+      <!--        <template #default="scope">-->
+      <!--          <el-button @click="handleEdit(scope.$index, scope.row)">Edit</el-button>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
 
     </el-table>
     <hr>
@@ -318,6 +319,15 @@ export default {
           this.form = [];
           this.dialogVisible = false;
         })
+      } else if (this.updateType) {
+        request.post("/dml/updateBatch/" + this.updateType, this.form).then(res => {
+          this.$message({
+            type: "success",
+            message: "更新完毕，" + res.msg
+          })
+          this.dialogVisible = false;
+          this.updateType = 0;
+        })
       } else {
         request.post("search/precise/" + this.searchType +
             "/" + this.pageSize +
@@ -333,6 +343,10 @@ export default {
           this.dialogVisible = false;
         });
       }
+    },
+    handleUpdateType(command) {
+      this.updateType = command;
+      ElMessage(`更新 ${command}`)
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -415,6 +429,7 @@ export default {
       pageSize: 15,
       totalRows: 0,
       dialogVisible: false,
+      updateType: 0,
       rowIds: [],
       multipleSelection: [],
       form: {
