@@ -7,8 +7,9 @@ import entity.*;
 import entity.Record;
 
 import java.util.List;
+import java.util.Map;
 
-public class FileDQLServiceImpl implements FileDQLService{
+public class FileDQLServiceImpl implements FileDQLService {
     @Override
     public Result<RowRecord> getRowRecordsByRecord(String path, Record record) {
         return null;
@@ -35,17 +36,17 @@ public class FileDQLServiceImpl implements FileDQLService{
     }
 
     @Override
-    public Result<?> getTimeServedBy(String path, Container container) {
+    public Result<Map<String, Integer>> getTimeServedBy(String path, Container container) {
         return null;
     }
 
     @Override
-    public Result<Courier> getCourier(String path, Company company, City city) {
+    public Result<Map<String, Integer>> getCourier(String path, Company company, City city) {
         return null;
     }
 
     @Override
-    public Result<City> getCity(String path) {
+    public Result<Map<String, Double>> getCity(String path) {
         return null;
     }
 }

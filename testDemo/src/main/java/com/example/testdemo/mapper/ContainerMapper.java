@@ -26,5 +26,8 @@ public interface ContainerMapper {
 
     List<Integer> getIds(String type);
 
-    int getOldestContainer(String type);
+    Integer getOldestContainer(String type);
+
+    Integer getContainerServiceTime(String code);
+
 }

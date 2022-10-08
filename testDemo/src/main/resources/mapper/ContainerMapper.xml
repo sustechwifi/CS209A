@@ -40,5 +40,26 @@
           and b.type = 3;
     </select>
 
+    <select id="getContainerServiceTime" resultType="java.lang.Integer">
+        select max(b.time - c.time) service_time
+        from sustc.public.transit b
+                 join sustc.public.transit c on
+                (
+                    select container_id
+                    from sustc.public.record r
+                    where r.id = c.record_id
+                      and r.container_id = (select id from sustc.public.container d where d.code = #{code})
+                )
+                =
+                (
+                    select container_id
+                    from sustc.public.record r
+                    where r.id = b.record_id
+                      and r.container_id = (select id from sustc.public.container d where d.code = #{code})
+                )
+        where c.type = 2
+          and b.type = 3;
+    </select>
+
 
 </mapper>

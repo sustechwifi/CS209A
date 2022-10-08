@@ -77,10 +77,14 @@ public class ContainerService {
         containerMapper.deleteAll();
     }
 
-    public Map<String, Integer> getOldestContainer(String type) {
-        int res = containerMapper.getOldestContainer(type);
+    public Map<String, Integer> getOldestContainer(Container container) {
+        Integer res = StringUtils.isEmpty(container.getCode())
+                ? containerMapper.getOldestContainer(container.getType())
+                : containerMapper.getContainerServiceTime(container.getCode());
+        String key = StringUtils.isEmpty(container.getCode())
+                ? container.getType() : container.getCode();
         Map<String, Integer> hashMap = new HashMap<>();
-        hashMap.put(type, res);
+        hashMap.put(key, res);
         return hashMap;
     }
 }

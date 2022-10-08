@@ -181,20 +181,18 @@ public class SearchService {
     }
 
     public Result<Map<String, Integer>> getContainerAdvance(Container container) {
-        long a = System.currentTimeMillis();
-        Map<String, Integer> time = containerService.getOldestContainer(container.getType());
+        Map<String, Integer> time = containerService.getOldestContainer(container);
         Result<Map<String, Integer>> res = new Result<>();
         res.setData(time);
-        res.setMsg("用时：" + (System.currentTimeMillis() - a) + "ms");
+        res.setCode("0");
         return res;
     }
 
     public Result<Map<String, Integer>> getGreatestCourier(String city, String company) {
-        long a = System.currentTimeMillis();
         Map<String, Integer> data = courierService.getGreatestCourier(city, company);
         Result<Map<String, Integer>> res = new Result<>();
         res.setData(data);
-        res.setMsg("success");
+        res.setCode("0");
         return res;
     }
 
@@ -203,12 +201,10 @@ public class SearchService {
     }
 
     public Result<Map<String, Double>> getResult3() {
-        long a = System.currentTimeMillis();
         Map<String, Double> data = transitService.getResult3();
         Result<Map<String, Double>> res = new Result<>();
         res.setData(data);
-        System.out.println(data.toString());
-        res.setMsg("用时：" + (System.currentTimeMillis() - a) + "ms");
+        res.setCode("0");
         return res;
     }
 }
