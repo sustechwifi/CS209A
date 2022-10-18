@@ -3,11 +3,11 @@
 <h1>Sustech CS307 2022 fall project-1</h1>
   <br><br><br><br>
   <h2>
-    project name: SUSTC DBMS
+    project name: SUSTC Data Manage System
     <br><br>
-    group member:
+    group member:  <span>游俊涛 12110919  李乐平 12112627</span>
     <br><br>
-    version 1.1
+    version: final
   </h2>
 
   </div>

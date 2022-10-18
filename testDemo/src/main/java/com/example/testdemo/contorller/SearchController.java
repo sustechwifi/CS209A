@@ -30,6 +30,7 @@ public class SearchController {
     @Resource
     SearchService searchService;
 
+
     @GetMapping("/batch")
     public void batchSearch(@RequestParam String item,
                             @RequestParam int type,
@@ -85,4 +86,6 @@ public class SearchController {
         }
         System.out.println("用时：" + (System.currentTimeMillis() - b) + "ms");
     }
+
+
 }

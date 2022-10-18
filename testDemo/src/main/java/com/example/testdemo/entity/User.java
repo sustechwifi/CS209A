@@ -80,4 +80,5 @@ public class User {
     public void setSex(String sex) {
         this.sex = sex;
     }
+
   }

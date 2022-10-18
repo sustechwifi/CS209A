@@ -1,9 +1,9 @@
 package com.example.testdemo.contorller;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.net.multipart.UploadFile;
 import cn.hutool.core.util.IdUtil;
 import com.example.testdemo.component.Result;
+import com.example.testdemo.fileIO.*;
 import com.example.testdemo.service.DataInsertService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,6 +54,107 @@ public class FileController {
     @DeleteMapping("/deleteAll")
     public Result<?> deleteAll() {
         return dataInsertService.deleteAll();
+    }
+
+
+    @GetMapping("/uploadByBatch")
+    public Result<?> insertByBatch() {
+        long a = System.currentTimeMillis();
+        try {
+            DBLoaderMain db = (DBLoaderMain)
+                    Class.forName("com.example.testdemo.fileIO.DBLoaderMain")
+                            .getDeclaredConstructor().newInstance();
+            db.dataInsert();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        long b = System.currentTimeMillis();
+        System.out.println("用时:" + (b - a) + "ms");
+        return Result.success();
+    }
+
+    @GetMapping("/fileIO")
+    public Result<String> addToFile() {
+        long a = System.currentTimeMillis();
+        FileLoaderMain fm = new FileLoaderMain();
+        fm.main();
+        long b = System.currentTimeMillis();
+        return Result.success("time cost:" + (b - a) + "ms");
+    }
+
+    @GetMapping("/find")
+    public Result<String> query(@RequestParam String itemName) {
+        long a = System.currentTimeMillis();
+        FileOperation fm = new FileOperation();
+        try {
+            fm.queryTest(itemName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        long b = System.currentTimeMillis();
+        System.out.println("time cost:" + (b - a) + "ms");
+        return Result.success("time cost:" + (b - a) + "ms");
+    }
+
+    @GetMapping("/dml")
+    public Result<String> dmlTest() {
+        long a = System.currentTimeMillis();
+        FileOperationTest fm = new FileOperationTest();
+        try {
+            fm.main();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        long b = System.currentTimeMillis();
+        return Result.success("time cost:" + (b - a) + "ms");
+    }
+
+    @GetMapping("/task1")
+    public Result<String> task1() {
+        System.out.println("begin");
+        long a = System.currentTimeMillis();
+        AdvancedFileQuery a1 = new AdvancedFileQuery();
+        try {
+            a1.prepare();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        a1.advancedQuery1();
+        long b = System.currentTimeMillis();
+        System.out.println("time cost:" + (b - a) + "ms");
+        return Result.success("time cost:" + (b - a) + "ms");
+    }
+
+    @GetMapping("/task2")
+    public Result<String> task2() {
+        System.out.println("begin");
+        long a = System.currentTimeMillis();
+        AdvancedFileQuery a2 = new AdvancedFileQuery();
+        try {
+            a2.prepare();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        a2.advancedQuery2();
+        long b = System.currentTimeMillis();
+        System.out.println("time cost:" + (b - a) + "ms");
+        return Result.success("time cost:" + (b - a) + "ms");
+    }
+
+    @GetMapping("/task3")
+    public Result<String> task3() {
+        System.out.println("begin");
+        long a = System.currentTimeMillis();
+        AdvancedFileQuery a3 = new AdvancedFileQuery();
+        try {
+            a3.prepare();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        a3.advancedQuery2();
+        long b = System.currentTimeMillis();
+        System.out.println("time cost:" + (b - a) + "ms");
+        return Result.success("time cost:" + (b - a) + "ms");
     }
 
 }

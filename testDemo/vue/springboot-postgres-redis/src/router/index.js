@@ -33,6 +33,11 @@ const routes = [
         name: 'Advance',
         component: () => import ("@/views/Advance")
       },
+      {
+        path: 'fileIO',
+        name: 'FileIO',
+        component: () => import ("@/views/FileIO")
+      },
     ]
   },
   {

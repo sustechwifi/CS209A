@@ -80,7 +80,8 @@
         where t.type = 2
           and t.record_id in
               (select r.id from sustc.public.record r
-               where r.item_class in (select g.item_class from sustc.public.record g order by random() limit 30))
+               where r.item_class in
+                     (select g.item_class from sustc.public.record g order by random() limit 30))
         group by c.name
         order by cost limit 1;
     </select>

@@ -31,6 +31,11 @@
       <span>special query</span>
     </el-menu-item>
 
+    <el-menu-item index="fileIO">
+      <el-icon><List /></el-icon>
+      <span>fileIO query</span>
+    </el-menu-item>
+
   </el-menu>
 </div>
 </template>

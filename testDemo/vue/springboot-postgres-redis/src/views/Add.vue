@@ -28,6 +28,10 @@
         </el-upload>
       </el-main>
       <el-footer>
+        <div style="padding: 10px">
+          <el-button type="primary" size="default" @click="batch">use .bat script</el-button>
+        </div>
+        <hr>
         <el-row>
           <el-switch
               v-model="local.chosen"
@@ -66,6 +70,9 @@ import request from "../../util/request";
 export default {
   name: "Add",
   methods: {
+    batch(){
+      request.get("/file/uploadByBatch")
+    },
     deleteAll() {
       request.delete("/file/deleteAll").then(res => {
         //console.log(res)
