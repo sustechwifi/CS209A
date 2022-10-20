@@ -35,19 +35,28 @@ element-plus 2.2.16
 
 机带 RAM	16.0 GB
 
+硬盘类型 HDD
+
 
 
 
 ##·注意事项
 ·配置好相关依赖
 
-·创建数据库 sustc ,导入ddl.sql文件
+·创建数据库 sustc ,导入ddl.sql文件(登录功能请手动创建 user表)
 
 ·将 application.properties 中的 数据库用户名，密码，fileIO包下文件路径替换为本地信息
 
 ·确保 端口8081(前端)、9090(后端)保持空闲状态
 
+·若需启用局域网内访问，请修改vue.config.js 中的ip,并开放防火墙
+
+·任何配置上的问题可+q 258743598
+
 ·课程设计，仅供学习参考
+
+
+· [项目结构原型](https://www.bilibili.com/video/BV14y4y1M7Nc?share_source=copy_web&vd_source=a7a5165492d966717b5e3572b98e82cd).
 
 
 
