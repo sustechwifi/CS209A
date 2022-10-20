@@ -118,9 +118,10 @@ export default {
     },
     deleteByRangeIds() {
       let ids = [];
-      for (let i = this.insertBody.idStart; i < this.insertBody.idEnd; i++) {
+      for (let i = this.idStart; i < this.idEnd; i++) {
         ids[i] = i;
       }
+      console.log(ids.length);
       request.post("/dml/deleteByIds", ids).then(res => {
         if (res.code === '0') {
           this.$message({

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CompanyMapper {
 
-    @Insert("insert into sustc.public.company(name) values (#{companyName}) ON CONFLICT(name) DO NOTHING")
+    @Insert("insert into sustc.public.company(name) values (#{companyName}) ON CONFLICT DO NOTHING")
     void addCompany(String companyName);
 
     @Select("select id from sustc.public.company where name = #{companyName}")

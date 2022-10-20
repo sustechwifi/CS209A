@@ -1,5 +1,7 @@
 package com.example.testdemo.fileIO;
 
+import com.alibaba.druid.util.StringUtils;
+
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -135,8 +137,18 @@ public class DBWriterImpl implements DBWriter {
 
     private void writeRecord() throws Exception {
         String sql = "insert into record(item_name,item_class,item_price,"
-                + "log_time,company_id,ship_id,container_id) values (?,?,?,?,?,?,?)";
+                + "log_time,company_id,ship_id,container_id,state) values (?,?,?,?,?,?,?,?)";
         writeDB("Record", sql, recordMap, (PreparedStatement st, String key, FileRecord record) -> {
+            int state;
+            if (!StringUtils.isEmpty(record.deliveryFinishedTime)) {
+                state = 4;
+            } else if (!StringUtils.isEmpty(record.importTime)) {
+                state = 3;
+            } else if (!StringUtils.isEmpty(record.exportTime)) {
+                state = 2;
+            } else {
+                state = 1;
+            }
             st.setString(1, record.itemName);
             st.setString(2, record.itemType);
             if (record.itemPrice.length() > 0) {
@@ -148,6 +160,7 @@ public class DBWriterImpl implements DBWriter {
             st.setObject(5, companyMap.getID(record.company));
             st.setObject(6, shipMap.getID(record.shipName));
             st.setObject(7, containerMap.getID(record.containerCode));
+            st.setInt(8, state);
         });
     }
 
@@ -172,10 +185,12 @@ public class DBWriterImpl implements DBWriter {
         String sql1 = "insert into transit(type,record_id,city_id) values(?,?,?)";
         String sql2 = "insert into transit(type,time,tax,record_id,city_id) values(?,?,?,?,?)";
 
-        writeDB("Retrieval", sql1, recordMap, (PreparedStatement st, String key, FileRecord record) -> {
+        writeDB("Retrieval", sql2, recordMap, (PreparedStatement st, String key, FileRecord record) -> {
             st.setInt(1, RETRIEVAL);
-            st.setObject(2, recordMap.getID(record.itemName));
-            st.setObject(3, cityMap.getID(record.retrievalCity));
+            st.setDate(2, toDate(record.retrievalStartTime));
+            st.setObject(3, null);
+            st.setObject(4, recordMap.getID(record.itemName));
+            st.setObject(5, cityMap.getID(record.retrievalCity));
         }, false);
 
         writeDB("Export", sql2, recordMap, (PreparedStatement st, String key, FileRecord record) -> {
@@ -194,10 +209,12 @@ public class DBWriterImpl implements DBWriter {
             st.setObject(5, cityMap.getID(record.importCity));
         }, false);
 
-        writeDB("Delivery", sql1, recordMap, (PreparedStatement st, String key, FileRecord record) -> {
+        writeDB("Delivery", sql2, recordMap, (PreparedStatement st, String key, FileRecord record) -> {
             st.setInt(1, DELIVERY);
-            st.setObject(2, recordMap.getID(record.itemName));
-            st.setObject(3, cityMap.getID(record.deliveryCity));
+            st.setDate(2, toDate(record.deliveryFinishedTime));
+            st.setObject(3, null);
+            st.setObject(4, recordMap.getID(record.itemName));
+            st.setObject(5, cityMap.getID(record.deliveryCity));
         }, false);
     }
 

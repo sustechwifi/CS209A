@@ -3,7 +3,6 @@ package com.example.testdemo.service;
 import com.example.testdemo.component.Result;
 import com.example.testdemo.component.RowRecord;
 import com.example.testdemo.entity.*;
-import com.example.testdemo.entity.Record;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -32,19 +31,16 @@ public class UpdateService {
 
 
     public void updateToExported(Transit t, int shipId, int containerId) {
-        System.out.println("==1==");
         transitService.update(t);
         recordService.updateToExported(t.getRecordId(), shipId, containerId);
     }
 
     public void updateToUnDelivery(Transit transit) {
-        System.out.println("==2==");
         transitService.update(transit);
         recordService.updateToUnDelivery(transit.getRecordId());
     }
 
     public void updateToFinished(Transit transit, Courier courier) {
-        System.out.println("==3==");
         int cid = courierService.add(courier);
         Handle h = new Handle(4, transit.getTime(), transit.getRecordId(), cid, null);
         handleService.update(h);

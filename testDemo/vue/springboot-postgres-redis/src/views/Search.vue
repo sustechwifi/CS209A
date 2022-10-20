@@ -55,7 +55,7 @@
       </el-radio-group>
     </el-row>
 
-    <el-dialog v-model="dialogVisible" title="Precise query" width="50%" draggable>
+    <el-dialog v-model="dialogVisible" :title="this.updateType ? 'Update':'Precise query'" width="50%" draggable>
 
       <el-form :model="form">
         <el-form-item label="Item name">

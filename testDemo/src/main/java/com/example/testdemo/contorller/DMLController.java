@@ -33,7 +33,13 @@ public class DMLController {
 
     @PostMapping("/deleteByIds")
     public Result<?> deleteByRecords(@RequestBody Integer[] ids) {
+        long a = System.currentTimeMillis();
         System.out.println(Arrays.toString(ids));
+        if (ids.length == 0) {
+            return Result.error("203", "no id selected");
+        }
+        long b = System.currentTimeMillis();
+        System.out.println("用时：" + (b - a) + "ms");
         return deleteService.deleteByRecordIds(ids);
     }
 
@@ -46,10 +52,12 @@ public class DMLController {
     @PostMapping("/updateBatch/{type}")
     public Result<?> updateBatch(@RequestBody RowRecord record, @PathVariable("type") int type) {
         System.out.println(record);
+        long a = System.currentTimeMillis();
         record.setRecordId(45498);
         if (type == 0) {
             return Result.error("505", "请选择检索类型");
         }
+        System.out.println("更新用时" + (System.currentTimeMillis() - a) + "ms");
         return updateService.updateBatch(record, type);
     }
 

@@ -151,7 +151,7 @@ public class FileController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        a3.advancedQuery2();
+        a3.advancedQuery3();
         long b = System.currentTimeMillis();
         System.out.println("time cost:" + (b - a) + "ms");
         return Result.success("time cost:" + (b - a) + "ms");
