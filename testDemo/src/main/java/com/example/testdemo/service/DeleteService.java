@@ -9,23 +9,11 @@ import javax.annotation.Resource;
 @Service
 public class DeleteService {
     @Resource
-    CompanyService companyService;
-    @Resource
-    ShipService shipService;
-    @Resource
-    ContainerService containerService;
-    @Resource
-    CityService cityService;
-    @Resource
-    CourierService courierService;
-    @Resource
     RecordService recordService;
     @Resource
     HandleService handleService;
     @Resource
     TransitService transitService;
-    @Resource
-    RowRecordService rowRecordService;
 
     @Transactional
     public Result<?> deleteByRecordIds(Integer[] ids) {

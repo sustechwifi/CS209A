@@ -118,7 +118,8 @@ public class DataInsertService {
         final int companyId = companyService.add(columns[24]);
         final int city1Id = cityService.add(new City(columns[3], null));
         final int cityEx = cityService.add(new City(columns[15], null));
-        Courier courier1 = new Courier(columns[7], columns[5], Integer.parseInt(columns[8]), "男".equals(columns[6]) ? 1 : 2, companyId, city1Id, null);
+        Courier courier1 = new Courier(columns[7], columns[5], Integer.parseInt(columns[8]),
+                "男".equals(columns[6]) ? 1 : 2, companyId, city1Id, null);
         final int c1 = courierService.add(courier1);
         return new int[]{city1Id, cityEx, c1, companyId};
     }

@@ -1,7 +1,6 @@
 package com.example.testdemo.service;
 
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.druid.util.StringUtils;
 import com.example.testdemo.component.Result;
 import com.example.testdemo.component.RowRecord;
 import com.example.testdemo.entity.Record;
@@ -9,11 +8,8 @@ import com.example.testdemo.mapper.RecordMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.Year;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RecordService {
@@ -61,7 +57,8 @@ public class RecordService {
                                 || containerService.getContainerById(r.getContainerId())
                                 .getType().equals(model.getContainerType())))
                                 && (shipId == null || shipId.equals(r.getShipId()))
-                                && (StrUtil.isBlank(model.getItemClass()) || model.getItemClass().equals(r.getItemClass())))
+                                && (StrUtil.isBlank(model.getItemClass())
+                                     || model.getItemClass().equals(r.getItemClass())))
                 .map(Record::getId).toList();
     }
 
