@@ -137,5 +137,32 @@
         select id from sustc.public.record where state = 2;
     </select>
 
+    <select id="getIdsByItemClassAndType" resultType="java.lang.Integer">
+        select id from sustc.public.record
+        <where>
+            <if test="record.itemName != null and record.itemName != ''">
+                and item_name = #{record.itemName}
+            </if>
+            <if test="record.companyId != null">
+                and company_id = #{record.companyId}
+            </if>
+            <if test="record.containerId != null">
+                and container_id = #{record.containerId}
+            </if>
+            <if test="record.shipId != null ">
+                and ship_id = #{record.shipId}
+            </if>
+            <if test="record.itemClass != null and record.itemClass != '' ">
+                and item_class = #{record.itemClass}
+            </if>
+            <if test="record.itemPrice != null">
+                and item_price = #{record.itemPrice}
+            </if>
+            <if test="record.state != 0">
+                and state = #{record.state}
+            </if>
+        </where>
+    </select>
+
 
 </mapper>

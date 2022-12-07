@@ -109,27 +109,29 @@ public class DBWriterImpl implements DBWriter {
     }
 
     private void writeCourier() throws Exception {
-        String sql = "insert into courier(name,gender,phone_number,age,company_id,city_id) values (?,?,?,?,?,?)";
+        String sql = "insert into courier(name,gender,phone_number,birth_year,company_id,city_id) values (?,?,?,?,?,?)";
         writeDB("Courier", sql, courierMap, (PreparedStatement st, String key, FileRecord record) -> {
             String[] s = key.split(",");
             String phone = s[0];
             String name = s[1];
             String gender;
-            String age;
+            int birthYear;
             Integer city;
             if (phone.equals(record.retrievalCourierPhone)) {
                 gender = record.retrievalCourierGender;
-                age = record.retrievalCourierAge;
+                birthYear = Integer.parseInt(record.retrievalStartTime.substring(0, 4))
+                        - Integer.parseInt(record.retrievalCourierAge);
                 city = cityMap.getID(record.retrievalCity);
             } else {
                 gender = record.deliveryCourierGender;
-                age = record.deliveryCourierAge;
+                birthYear = Integer.parseInt(record.deliveryFinishedTime.substring(0, 4))
+                        - Integer.parseInt(record.deliveryCourierAge);
                 city = cityMap.getID(record.deliveryCity);
             }
             st.setString(1, name);
             st.setInt(2, gender.equals("男") ? MALE : FEMALE);
             st.setString(3, phone);
-            st.setInt(4, Math.round(Float.parseFloat(age)));
+            st.setInt(4, Math.round(birthYear));
             st.setObject(5, companyMap.getID(record.company));
             st.setInt(6, city);
         });

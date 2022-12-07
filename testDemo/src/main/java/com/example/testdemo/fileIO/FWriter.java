@@ -107,19 +107,21 @@ public class FWriter implements DBWriter {
             String phone = s[0];
             String name = s[1];
             String gender;
-            String age;
+            int age;
             String city;
             if (phone.equals(record.retrievalCourierPhone)) {
                 gender = record.retrievalCourierGender;
-                age = record.retrievalCourierAge;
+                age = Integer.parseInt(record.retrievalStartTime.substring(0, 4))
+                        - Integer.parseInt(record.retrievalCourierAge);
                 city = record.retrievalCity;
             } else {
                 gender = record.deliveryCourierGender;
-                age = record.deliveryCourierAge;
+                age = Integer.parseInt(record.deliveryFinishedTime.substring(0, 4))
+                        - Integer.parseInt(record.deliveryCourierAge);
                 city = record.deliveryCity;
             }
             return String.format("%s,%d,%s,%d,%s,%s",
-                    name, gender.equals("男") ? MALE : FEMALE, phone, (int) (Float.parseFloat(age)), record.company, city);
+                    name, gender.equals("男") ? MALE : FEMALE, phone, age, record.company, city);
         });
     }
 

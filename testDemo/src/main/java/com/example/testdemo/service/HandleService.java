@@ -1,8 +1,8 @@
 package com.example.testdemo.service;
 
+import cn.hutool.core.util.StrUtil;
 import com.example.testdemo.component.RowRecord;
 import com.example.testdemo.entity.Handle;
-import com.example.testdemo.entity.Transit;
 import com.example.testdemo.mapper.HandleMapper;
 import org.springframework.stereotype.Service;
 
@@ -90,5 +90,29 @@ public class HandleService {
 
     public void update(Handle h) {
         handleMapper.update(h);
+    }
+
+    public List<Integer> getRecordIdsByCourierName(int type, String retrievalCourier, String deliveryCourier) {
+        List<Integer> l1 = null, l2 = null;
+        if (StrUtil.isNotBlank(retrievalCourier)) {
+            l1 = handleMapper.getRecordIdsByRetrievalCourier(type, retrievalCourier);
+        }
+        if (StrUtil.isNotBlank(deliveryCourier)) {
+            l2 = handleMapper.getRecordIdsByDeliveryCourier(type, deliveryCourier);
+        }
+        if (l1 == null || l2 == null) {
+            return l1 == null ? l2 : l1;
+        } else {
+            List<Integer> res = new ArrayList<>();
+            Map<Integer, Integer> m = new HashMap<>(l1.size() + l2.size());
+            l1.forEach(i -> m.put(i, 1));
+            l2.forEach(i -> m.put(i, Objects.requireNonNullElse(m.get(i), 0) + 1));
+            m.forEach((k, v) -> {
+                if (v == 2) {
+                    res.add(k);
+                }
+            });
+            return res;
+        }
     }
 }

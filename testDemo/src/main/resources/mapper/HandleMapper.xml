@@ -44,5 +44,25 @@
           and type = #{type};
     </select>
 
+    <select id="getRecordIdsByRetrievalCourier" resultType="java.lang.Integer">
+        select h.record_id from sustc.public.handle h
+        join sustc.public.record r on r.id = h.record_id
+        where r.state = #{type} and h.type = 1
+        and h.courier_id in (
+            select id from sustc.public.courier
+            where name = #{name}
+        )
+    </select>
+
+    <select id="getRecordIdsByDeliveryCourier" resultType="java.lang.Integer">
+        select h.record_id from sustc.public.handle h
+                                    join sustc.public.record r on r.id = h.record_id
+        where r.state = #{type} and h.type = 4
+          and h.courier_id in (
+            select id from sustc.public.courier
+            where name = #{name}
+        )
+    </select>
+
 
 </mapper>

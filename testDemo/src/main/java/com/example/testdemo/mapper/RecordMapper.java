@@ -46,9 +46,10 @@ public interface RecordMapper {
 
     List<Integer> getIdsByItemClass(String condition, int type);
 
+
     List<Integer> getIdsByCompany(String condition, int type);
 
-    void updateByModel(@Param("r") RowRecord r,@Param("type") int type);
+    void updateByModel(@Param("r") RowRecord r, @Param("type") int type);
 
     void updateToExported(@Param("id") int id, @Param("shipId") int shipId,
                           @Param("containerId") int containerId);
@@ -64,4 +65,5 @@ public interface RecordMapper {
     List<Integer> getAllUnExported();
 
     List<Integer> getAllExported();
+
 }

@@ -10,6 +10,7 @@
         <result column="phone_number" property="phoneNumber"/>
         <result column="company_id" property="companyId"/>
         <result column="city_id" property="cityId"/>
+        <result column="birth_year" property="birthYear"/>
     </resultMap>
 
     <select id="getCourier" resultMap="courierRM">
@@ -21,8 +22,8 @@
             <if test="courier.name != null and courier.name != ''">
                 and "name" = #{courier.name}
             </if>
-            <if test="courier.age != null">
-                and age = #{courier.age}
+            <if test="courier.birthYear != null">
+                and birth_year = #{courier.birthYear}
             </if>
             <if test="courier.gender != null">
                 and gender = #{courier.gender}

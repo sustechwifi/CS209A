@@ -1,26 +1,15 @@
 package com.example.testdemo.service;
 
-import com.alibaba.druid.sql.ast.SQLPartitionSpec;
-import com.alibaba.druid.sql.visitor.functions.If;
 import com.alibaba.druid.util.StringUtils;
-import com.alibaba.fastjson.JSON;
 import com.example.testdemo.component.PageBean;
 import com.example.testdemo.component.Result;
 import com.example.testdemo.component.RowRecord;
-import com.example.testdemo.entity.*;
 import com.example.testdemo.entity.Record;
-import com.example.testdemo.utils.RedisConstants;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import com.example.testdemo.entity.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import static com.example.testdemo.service.HandleService.HANDLE_SIZE;
-import static com.example.testdemo.service.TransitService.TRANSIT_SIZE;
+import java.util.*;
 
 @Service
 public class SearchService {
@@ -43,7 +32,6 @@ public class SearchService {
     TransitService transitService;
     @Resource
     RowRecordService rowRecordService;
-
 
 
     public PageBean<RowRecord> handleBatchSearch(String item, int type, String search, int start, int pageSize) {
@@ -125,9 +113,41 @@ public class SearchService {
             return preciseByRecord(ids, model, start, pageSize, cityIds, courierIds);
         } else if (courierIds[0] != null || courierIds[1] != null) {
             return preciseByHandle(type, model, start, pageSize, companyId, shipId, cityIds, courierIds);
-        } else {
+        } else if (model.getImportDate() != null
+                || model.getExportDate() != null
+                || model.getRetrievalDate() != null
+                || model.getDeliveryDate() != null
+                || model.getExportTax() != null
+                || model.getImportTax() != null) {
             return preciseByTransit(type, model, start, pageSize, companyId, shipId, cityIds, courierIds);
+        } else {
+            return preciseByCourierAndItemClass(type, model, start, pageSize, companyId, shipId, cityIds, courierIds);
         }
+    }
+
+    private PageBean<RowRecord> preciseByCourierAndItemClass(int type, RowRecord model, int start, int pageSize,
+                                                             Integer companyId, Integer shipId, Integer[] cityIds, Integer[] courierIds) {
+        List<Integer> ids1 = recordService.getIdsByItemClass(type, model.getItemClass(), companyId, shipId);
+        List<Integer> ids2 = handleService.getRecordIdsByCourierName(type, model.getRetrievalCourier(), model.getDeliveryCourier());
+        List<Integer> res = new ArrayList<>();
+        int flag = ids1 != null && ids2 != null ? 2 : 1;
+        Map<Integer, Integer> m = new HashMap<>(500);
+        if (ids1 != null) {
+            ids1.forEach(i -> m.put(i, 1));
+        }
+        if (ids2 != null) {
+            ids2.forEach(i -> m.put(i, Objects.requireNonNullElse(m.get(i), 0) + 1));
+        }
+        m.forEach((k, v) -> {
+            if (v == flag) {
+                res.add(k);
+            }
+        });
+        System.out.println(res);
+        if (res.isEmpty()) {
+            return new PageBean<>(0, new ArrayList<>(), null, "no found");
+        }
+        return preciseByRecord(res, model, start, pageSize, cityIds, courierIds);
     }
 
     private PageBean<RowRecord> preciseByHandle(int type, RowRecord model, int start, int pageSize,
@@ -154,7 +174,7 @@ public class SearchService {
     private PageBean<RowRecord> preciseByRecord(List<Integer> ids, RowRecord model, int start, int pageSize,
                                                 Integer[] cityIds, Integer[] courierIds) {
         int count = 0;
-        System.out.println("record num:" + ids.size());
+        System.out.println("record id num:" + ids.size());
         List<RowRecord> rows = new ArrayList<>();
         for (Integer id : ids) {
             List<Transit> transits = transitService.getTransitsByRecordId(id);
@@ -165,11 +185,11 @@ public class SearchService {
             if (!handleService.isCorrectHandle(handles, model, courierIds)) {
                 continue;
             }
+            RowRecord rowRecord = rowRecordService.formRowRecord(recordService.getRecordById(id), transits, handles, model);
+            if (rowRecord == null) {
+                continue;
+            }
             if (count >= (start - 1) * pageSize && rows.size() < pageSize) {
-                RowRecord rowRecord = rowRecordService.formRowRecord(recordService.getRecordById(id), transits, handles, model);
-                if (rowRecord == null) {
-                    continue;
-                }
                 rows.add(rowRecord);
             }
             count++;

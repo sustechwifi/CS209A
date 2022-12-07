@@ -1,10 +1,12 @@
 package com.example.testdemo.mapper;
 
 import com.example.testdemo.entity.Handle;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -26,4 +28,8 @@ public interface HandleMapper {
     void deleteByRecordIds(Integer[] ids);
 
     void addByBatch(List<Handle> list);
+
+    List<Integer> getRecordIdsByRetrievalCourier(@Param("type") int type, @Param("name") String name);
+
+    List<Integer> getRecordIdsByDeliveryCourier(@Param("type") int type, @Param("name") String name);
 }

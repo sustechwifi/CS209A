@@ -1,5 +1,6 @@
 package com.example.testdemo.service;
 
+import cn.hutool.core.util.StrUtil;
 import com.example.testdemo.component.RowRecord;
 import com.example.testdemo.entity.*;
 import com.example.testdemo.entity.Record;
@@ -29,9 +30,17 @@ public class RowRecordService {
                 model.getRetrievalCourierGender())) {
             return null;
         }
+        if (StrUtil.isNotBlank(model.getRetrievalCourier())
+                && !c1.getName().equals(model.getRetrievalCourier())) {
+            return null;
+        }
         Courier c2 = courierService.formCourier(courierService.getCourierById(handles.get(1).getCourierId()));
         if (courierService.checkAgeAndGender(c2, model.getDeliveryCourierAge(),
                 model.getDeliveryCourierGender())) {
+            return null;
+        }
+        if (StrUtil.isNotBlank(model.getDeliveryCourier())
+                && !c2.getName().equals(model.getDeliveryCourier())) {
             return null;
         }
         Container container = containerService.formContainer(
@@ -46,13 +55,13 @@ public class RowRecordService {
                 c1.getName(),
                 c1.getGender(),
                 c1.getPhoneNumber(),
-                c1.getAge(),
+                c1.getBirthYear(),
                 transits.get(3) == null ? null : transits.get(3).getTime(),
                 transits.get(3) == null ? null : cityService.getCityName(transits.get(3).getCityId()),
                 c2.getName(),
                 c2.getGender(),
                 c2.getPhoneNumber(),
-                c2.getAge(),
+                c2.getBirthYear(),
                 transits.get(1) == null ? null : cityService.getCityName(transits.get(1).getCityId()),
                 transits.get(1) == null ? null : transits.get(1).getTax(),
                 transits.get(1) == null ? null : transits.get(1).getTime(),

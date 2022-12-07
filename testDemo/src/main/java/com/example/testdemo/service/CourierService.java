@@ -50,9 +50,9 @@ public class CourierService {
         if (age == null && gender == null) {
             return false;
         } else if (age == null || gender == null) {
-            return age == null ? !gender.equals(courier.getGender()) : !age.equals(courier.getAge());
+            return age == null ? !gender.equals(courier.getGender()) : !age.equals(courier.getBirthYear());
         } else {
-            return !age.equals(courier.getAge()) || !gender.equals(courier.getGender());
+            return !age.equals(courier.getBirthYear()) || !gender.equals(courier.getGender());
         }
     }
 

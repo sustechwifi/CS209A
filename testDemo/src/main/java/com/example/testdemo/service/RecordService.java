@@ -58,7 +58,7 @@ public class RecordService {
                                 .getType().equals(model.getContainerType())))
                                 && (shipId == null || shipId.equals(r.getShipId()))
                                 && (StrUtil.isBlank(model.getItemClass())
-                                     || model.getItemClass().equals(r.getItemClass())))
+                                || model.getItemClass().equals(r.getItemClass())))
                 .map(Record::getId).toList();
     }
 
@@ -111,5 +111,10 @@ public class RecordService {
 
     public List<Integer> getAllUnFinished() {
         return recordMapper.getAllUnFinished();
+    }
+
+    public List<Integer> getIdsByItemClass(int type, String itemClass, Integer companyId, Integer shipId) {
+        Record r = new Record(null, null, itemClass, null, companyId, null, shipId, null, type);
+        return recordMapper.getIds(r);
     }
 }

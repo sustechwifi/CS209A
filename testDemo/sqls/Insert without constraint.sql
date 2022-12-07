@@ -23,7 +23,7 @@ create table ship(
 create table courier(
     phone_number varchar(16),
     name varchar(20) not null,
-    age int,
+    birth_year int,
     gender int8,
     --0 for female
     --1 for male

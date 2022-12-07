@@ -62,9 +62,9 @@
           <div class="demo-input-suffix">
             <el-row :gutter="20">
               <span>item info</span>
-              <el-input v-model="form.itemName" style="width: 200px" placeholder="itemName *"/>
+              <el-input v-model="form.itemName" style="width: 200px" placeholder="itemName"/>
               <el-input v-model="form.itemClass" style="width: 200px" placeholder="itemClass"/>
-              <el-input v-model="form.itemPrice" style="width: 200px" placeholder="itemPrice *"/>
+              <el-input v-model="form.itemPrice" style="width: 200px" placeholder="itemPrice"/>
             </el-row>
           </div>
         </el-form-item>
@@ -75,7 +75,7 @@
             <el-date-picker
                 v-model="form.retrievalDate"
                 type="date"
-                placeholder="Pick a date *"
+                placeholder="Pick a date"
                 style="width: 100%"
             />
           </el-col>
@@ -83,15 +83,15 @@
         <el-form-item label="Retrieval courier and phone">
           <el-input style="width: 150px" v-model="form.retrievalCourier" placeholder="courier name"/>
           <span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</span>
-          <el-input style="width: 200px" v-model="form.retrievalCourierPhone" placeholder="phone number *"/>
+          <el-input style="width: 200px" v-model="form.retrievalCourierPhone" placeholder="phone number"/>
         </el-form-item>
-        <el-form-item label="Retrieval courier gender and age">
+        <el-form-item label="Retrieval courier gender and birth year">
           <el-radio-group v-model="form.retrievalCourierGender">
             <el-radio :label="undefined">null</el-radio>
             <el-radio :label="1">male</el-radio>
-            <el-radio :label="2">female</el-radio>
+            <el-radio :label="0">female</el-radio>
           </el-radio-group>
-          <el-input style="width: 100px;padding-left: 50px" v-model="form.retrievalCourierAge" placeholder="age"/>
+          <el-input style="width: 150px;padding-left: 50px" v-model="form.retrievalCourierAge" placeholder="birth year"/>
         </el-form-item>
         <el-form-item label="Delivery city and date">
           <el-input style="width: 150px" v-model="form.deliveryCity" placeholder="retrieval city"/>
@@ -100,7 +100,7 @@
             <el-date-picker
                 v-model="form.deliveryDate"
                 type="date"
-                placeholder="Pick a date *"
+                placeholder="Pick a date"
                 style="width: 100%"
             />
           </el-col>
@@ -108,15 +108,15 @@
         <el-form-item label="Delivery courier and phone">
           <el-input style="width: 150px" v-model="form.deliveryCourier" placeholder="courier name"/>
           <span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</span>
-          <el-input style="width: 200px" v-model="form.deliveryCourierPhone" placeholder="phone number *"/>
+          <el-input style="width: 200px" v-model="form.deliveryCourierPhone" placeholder="phone number"/>
         </el-form-item>
-        <el-form-item label="Delivery courier gender and age">
+        <el-form-item label="Delivery courier gender and birth year">
           <el-radio-group v-model="form.deliveryCourierGender">
             <el-radio :label="undefined">null</el-radio>
             <el-radio :label="1">male</el-radio>
-            <el-radio :label="2">female</el-radio>
+            <el-radio :label="0">female</el-radio>
           </el-radio-group>
-          <el-input style="width: 100px;padding-left: 50px" v-model="form.deliveryCourierAge" placeholder="age"/>
+          <el-input style="width: 150px;padding-left: 50px" v-model="form.deliveryCourierAge" placeholder="birth year"/>
         </el-form-item>
 
         <el-form-item label="Item export">
@@ -127,11 +127,11 @@
               <el-date-picker
                   v-model="form.exportDate"
                   type="date"
-                  placeholder="Pick a date *"
+                  placeholder="Pick a date"
                   style="width: 100%"
               />
             </el-col>
-            <el-input style="width: 100px" v-model="form.exportTax" placeholder="export tax *"/>
+            <el-input style="width: 100px" v-model="form.exportTax" placeholder="export tax"/>
           </el-row>
         </el-form-item>
 
@@ -143,16 +143,16 @@
               <el-date-picker
                   v-model="form.importDate"
                   type="date"
-                  placeholder="Pick a date *"
+                  placeholder="Pick a date"
                   style="width: 100%"
               />
             </el-col>
-            <el-input style="width: 100px" v-model="form.importTax" placeholder="import tax *"/>
+            <el-input style="width: 100px" v-model="form.importTax" placeholder="import tax"/>
           </el-row>
         </el-form-item>
 
         <el-form-item label="Container">
-          <el-input style="width: 200px" v-model="form.containerCode" placeholder="container code *"/>
+          <el-input style="width: 200px" v-model="form.containerCode" placeholder="container code"/>
           <span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</span>
           <el-input style="width: 200px" v-model="form.containerType" placeholder="container type"/>
         </el-form-item>
@@ -165,7 +165,7 @@
 
       </el-form>
 
-      <el-alert title="at least 1 column with '*' should be filled" type="warning"/>
+      <el-alert title="It will be slow if only general columns with are filled" type="warning"/>
       <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">Cancel</el-button>
@@ -200,7 +200,7 @@
         <template v-slot="scope">
           <el-input v-model="scope.row.retrievalCourier"></el-input>
           <el-input v-model="scope.row.retrievalCourierPhone"></el-input>
-          <el-input v-model="scope.row.retrievalCourierGender"></el-input>
+          <span>{{scope.row.retrievalCourierGender?'男':'女'}}</span>
           <el-input v-model="scope.row.retrievalCourierAge"></el-input>
         </template>
       </el-table-column>
@@ -232,7 +232,7 @@
         <template v-slot="scope">
           <el-input v-model="scope.row.deliveryCourier"></el-input>
           <el-input v-model="scope.row.deliveryCourierPhone"></el-input>
-          <el-input v-model="scope.row.deliveryCourierGender"></el-input>
+          <span>{{scope.row.deliveryCourierGender?'男':'女'}}</span>
           <el-input v-model="scope.row.deliveryCourierAge"></el-input>
         </template>
       </el-table-column>

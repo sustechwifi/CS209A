@@ -118,8 +118,9 @@ public class DataInsertService {
         final int companyId = companyService.add(columns[24]);
         final int city1Id = cityService.add(new City(columns[3], null));
         final int cityEx = cityService.add(new City(columns[15], null));
-        Courier courier1 = new Courier(columns[7], columns[5], Integer.parseInt(columns[8]),
-                "男".equals(columns[6]) ? 1 : 2, companyId, city1Id, null);
+        Courier courier1 = new Courier(columns[7], columns[5],
+                Integer.parseInt(columns[4].substring(0, 4)) - Integer.parseInt(columns[8]),
+                "男".equals(columns[6]) ? 1 : 0, companyId, city1Id, null);
         final int c1 = courierService.add(courier1);
         return new int[]{city1Id, cityEx, c1, companyId};
     }
@@ -131,7 +132,7 @@ public class DataInsertService {
      */
     public void insertUnExported(String[] columns, int[] ids) throws ParseException {
         final int recordId = recordService.add(new Record(new Timestamp(new SimpleDateFormat("yyyy/MM/dd hh:mm").parse(columns[25]).getTime()),
-                columns[0], columns[1], Long.parseLong(columns[2]), ids[3], null, null, null,1));
+                columns[0], columns[1], Long.parseLong(columns[2]), ids[3], null, null, null, 1));
         handleService.add(new Handle(1, new SimpleDateFormat("yyyy/MM/dd").parse(columns[4]), recordId, ids[2], null));
         handleService.add(new Handle(4, null, recordId, null, null));
         transitService.add(new Transit(1, new SimpleDateFormat("yyyy/MM/dd").parse(columns[4]), null, ids[0], recordId, null));
@@ -151,7 +152,7 @@ public class DataInsertService {
         final int containerId = containerService.add(new Container(columns[21], columns[22], null));
         final int shipId = shipService.add(new Ship(columns[23], ids[3], null));
         final int recordId = recordService.add(new Record(new Timestamp(new SimpleDateFormat("yyyy/MM/dd hh:mm").parse(columns[25]).getTime()),
-                columns[0], columns[1], Long.parseLong(columns[2]), ids[3], containerId, shipId, null,2));
+                columns[0], columns[1], Long.parseLong(columns[2]), ids[3], containerId, shipId, null, 2));
         handleService.add(new Handle(1, new SimpleDateFormat("yyyy/MM/dd").parse(columns[4]), recordId, ids[2], null));
         handleService.add(new Handle(4, null, recordId, null, null));
         transitService.add(new Transit(1, new SimpleDateFormat("yyyy/MM/dd").parse(columns[4]), null, ids[0], recordId, null));
@@ -171,7 +172,7 @@ public class DataInsertService {
         final int containerId = containerService.add(new Container(columns[21], columns[22], null));
         final int shipId = shipService.add(new Ship(columns[23], ids[3], null));
         final int recordId = recordService.add(new Record(new Timestamp(new SimpleDateFormat("yyyy/MM/dd hh:mm").parse(columns[25]).getTime()),
-                columns[0], columns[1], Long.parseLong(columns[2]), ids[3], containerId, shipId, null,3));
+                columns[0], columns[1], Long.parseLong(columns[2]), ids[3], containerId, shipId, null, 3));
         handleService.add(new Handle(1, new SimpleDateFormat("yyyy/MM/dd").parse(columns[4]), recordId, ids[2], null));
         handleService.add(new Handle(4, null, recordId, null, null));
         transitService.add(new Transit(1, new SimpleDateFormat("yyyy/MM/dd").parse(columns[4]), null, ids[0], recordId, null));
@@ -190,10 +191,12 @@ public class DataInsertService {
         final int cityIn = cityService.add(new City(columns[18], null));
         final int containerId = containerService.add(new Container(columns[21], columns[22], null));
         final int shipId = shipService.add(new Ship(columns[23], ids[3], null));
-        Courier courier2 = new Courier(columns[13], columns[11], Integer.parseInt(columns[14]), "男".equals(columns[12]) ? 1 : 2, ids[3], city2Id, null);
+        Courier courier2 = new Courier(columns[13], columns[11],
+                Integer.parseInt(columns[20].substring(0, 4)) - Integer.parseInt(columns[14]),
+                "男".equals(columns[12]) ? 1 : 0, ids[3], city2Id, null);
         final int c2 = courierService.add(courier2);
         final int recordId = recordService.add(new Record(new Timestamp(new SimpleDateFormat("yyyy/MM/dd hh:mm").parse(columns[25]).getTime()),
-                columns[0], columns[1], Long.parseLong(columns[2]), ids[3], containerId, shipId, null,4));
+                columns[0], columns[1], Long.parseLong(columns[2]), ids[3], containerId, shipId, null, 4));
         List<Handle> handles = new ArrayList<>();
         List<Transit> transits = new ArrayList<>();
         handles.add(new Handle(1, new SimpleDateFormat("yyyy/MM/dd").parse(columns[4]), recordId, ids[2], null));
